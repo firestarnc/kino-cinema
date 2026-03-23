@@ -1,26 +1,259 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital@0;1&family=Outfit:wght@400;500;600&display=swap');
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  /* Font Definitions */
+  --font-serif: "Playfair Display", serif;
+  --font-sans: "Outfit", sans-serif;
+
+  /* Your Kino Theme Colors */
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-cinema-gold: #d4af37;
+  --color-gold: #d4af37;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: 350 100% 2%; 
+    --foreground: 0 0% 100%; 
+    --card: 350 50% 5%; 
+    --card-foreground: 0 0% 100%;
+    --primary: 343 85% 27%; 
+    --primary-foreground: 0 0% 100%;
+    --muted: 350 20% 10%;
+    --muted-foreground: 0 0% 60%;
+    --border: 343 85% 27%; 
+    --input: 343 85% 27%;
+  }
+
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    /* Set Outfit as the default font */
+    font-family: var(--font-sans);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    /* Set Playfair Display for headings */
+    font-family: var(--font-serif);
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes glow-pulse {
+    0%, 100% {
+      opacity: 0.5;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  /* Font Utilities */
+  .font-outfit {
+    font-family: "Outfit", sans-serif;
+  }
+
+  .font-playfair {
+    font-family: "Playfair Display", serif;
+  }
+
+  /* Color Utilities */
+  .text-gold {
+    color: #d4af37;
+  }
+
+  .text-cinema-gold {
+    color: #d4af37;
+  }
+
+  /* Text Gradient Utilities */
+  .text-gold-gradient {
+    display: inline-block;
+    background: linear-gradient(135deg, #D3AC5A 0%, #E5C580 50%, #D3AC5A 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    font-weight: inherit;
+  }
+
+  .text-primary-gradient {
+    display: inline-block;
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary) / 0.6));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    font-weight: inherit;
+  }
+
+  .via-cinema-gold {
+    --tw-gradient-stops: var(--tw-gradient-from), #d4af37, var(--tw-gradient-to);
+  }
+
+  .via-cinema-gold\/40 {
+    --tw-gradient-stops: var(--tw-gradient-from), rgb(212 175 55 / 0.4), var(--tw-gradient-to);
+  }
+
+  .to-cinema-gold\/40 {
+    --tw-gradient-to: rgb(212 175 55 / 0.4);
+  }
+
+  .to-cinema-gold\/50 {
+    --tw-gradient-to: rgb(212 175 55 / 0.5);
+  }
+
+  .from-transparent {
+    --tw-gradient-from: transparent;
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+  }
+
+  .bg-cinema-gold\/20 {
+    background-color: rgb(212 175 55 / 0.2);
+  }
+
+  .bg-cinema-gold\/30 {
+    background-color: rgb(212 175 55 / 0.3);
+  }
+
+  .bg-cinema-gold\/40 {
+    background-color: rgb(212 175 55 / 0.4);
+  }
+
+  .bg-cinema-gold\/50 {
+    background-color: rgb(212 175 55 / 0.5);
+  }
+
+  .bg-cinema-gold\/60 {
+    background-color: rgb(212 175 55 / 0.6);
+  }
+
+  .border-cinema-gold\/60 {
+    border-color: rgb(212 175 55 / 0.6);
+  }
+
+  /* Gradient utilities for decorative lines */
+  .bg-gradient-cinema-gold {
+    background: linear-gradient(to right, transparent, #d4af37, transparent);
+  }
+
+  .bg-gradient-cinema-gold-40 {
+    background: linear-gradient(to right, transparent, rgb(212 175 55 / 0.4), transparent);
+  }
+
+  .bg-gradient-cinema-gold-left {
+    background: linear-gradient(to left, transparent, #d4af37, transparent);
+  }
+
+  .bg-gradient-cinema-gold-left-40 {
+    background: linear-gradient(to left, transparent, rgb(212 175 55 / 0.4), transparent);
+  }
+
+  .to-transparent {
+    --tw-gradient-to: transparent;
+  }
+
+  /* Size Utilities */
+  .h-150 {
+    height: 37.5rem;
+  }
+
+  .w-150 {
+    width: 37.5rem;
+  }
+
+  .h-75 {
+    height: 18.75rem;
+  }
+
+  .w-75 {
+    width: 18.75rem;
+  }
+
+  .h-125 {
+    height: 31.25rem;
+  }
+
+  .w-175 {
+    width: 43.75rem;
+  }
+
+  /* Animation Utilities */
+  .animate-fade-in {
+    animation: fade-in 0.6s ease-out forwards;
+  }
+
+  .animate-fade-up {
+    animation: fade-up 0.8s ease-out forwards;
+  }
+
+  .animate-glow-pulse {
+    animation: glow-pulse 4s ease-in-out infinite;
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  /* Glow Effects */
+  .velvet-glow {
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+  }
+
+  .velvet-glow-strong {
+    box-shadow: 0 0 40px rgba(212, 175, 55, 0.4), 0 0 80px rgba(212, 175, 55, 0.2);
+  }
+
+  .hover\:velvet-glow:hover {
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+  }
+
+  /* Cinema Styling */
+  .cinema-curtain {
+    position: relative;
+    background: linear-gradient(180deg, transparent 0%, hsl(var(--background) / 0.5) 100%);
+  }
 }

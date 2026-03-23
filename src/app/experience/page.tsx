@@ -179,7 +179,7 @@ function HeroSection() {
           style={{ animationDelay: "0.3s" }}
         >
           The{" "}
-          <span className="text-gold-gradient">NOIR</span>{" "}
+          <span className="text-gold-gradient">KINO</span>{" "}
           Experience
         </h1>
 

@@ -1,4 +1,4 @@
-import { Lock, Film, Wine, Projector } from "lucide-react";
+import { Lock, Film, Wine, Projector, Megaphone } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 interface Feature {
@@ -31,6 +31,12 @@ const features: Feature[] = [
     title: "State of the Art",
     description:
       "Dolby Atmos immersive audio, 4K laser projection, and acoustically engineered rooms built for cinematic perfection.",
+  },
+  {
+    icon: Megaphone,
+    title: "Advertise on Screen",
+    description:
+      "Show your video ads in front of premium viewers with elegant continuous playback options tailored to your campaign goals.",
   },
 ];
 
@@ -93,7 +99,7 @@ export default function ExperienceSection() {
         </div>
 
         {/* Feature grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 md:gap-5">
           {features.map((feature, i) => (
             <FeatureCard key={feature.title} feature={feature} index={i} />
           ))}

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Star, Clock, User } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -12,22 +13,16 @@ interface FilmCardProps {
 }
 
 const genreGradients: Record<string, string> = {
-  "Neo-Noir Thriller":
+  "Action Thriller":
     "from-primary/60 via-primary/30 to-background",
-  "Psychological Drama":
+  "Thriller Drama":
     "from-blue-900/50 via-indigo-900/30 to-background",
-  "Musical Thriller":
+  "Romantic Drama":
     "from-purple-900/50 via-primary/30 to-background",
-  "Gothic Mystery":
+  "Romantic Comedy":
     "from-emerald-900/40 via-gray-900/40 to-background",
-  "Horror Noir":
+  "Family Drama":
     "from-red-950/60 via-primary/40 to-background",
-  "Supernatural Drama":
-    "from-cyan-900/40 via-slate-900/40 to-background",
-  "Art-House Romance":
-    "from-rose-900/40 via-amber-900/20 to-background",
-  "Surrealist Thriller":
-    "from-violet-900/50 via-fuchsia-900/30 to-background",
 };
 
 export default function FilmCard({ film, index = 0 }: FilmCardProps) {
@@ -47,12 +42,24 @@ export default function FilmCard({ film, index = 0 }: FilmCardProps) {
         )}
       >
         {/* Poster area */}
-        <div
-          className={cn(
-            "relative flex h-64 items-end overflow-hidden bg-gradient-to-b",
-            gradient
-          )}
-        >
+        <div className="relative flex h-64 items-end overflow-hidden">
+          <Image
+            src={film.posterUrl}
+            alt={film.title}
+            fill
+            className="object-cover p-2 transition-transform duration-700 group-hover:scale-105"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            priority={index === 0}
+          />
+
+          <div
+            className={cn(
+              "absolute inset-0 bg-gradient-to-t",
+              gradient
+            )}
+          />
+
+          <div className="absolute inset-0 bg-black/30" />
           {/* Decorative film reel lines */}
           <div className="absolute inset-0 opacity-[0.04]">
             {Array.from({ length: 8 }).map((_, i) => (
@@ -123,7 +130,7 @@ export default function FilmCard({ film, index = 0 }: FilmCardProps) {
               size="sm"
               className="flex-1 velvet-glow font-outfit text-xs tracking-wider uppercase transition-all duration-300 hover:velvet-glow-strong"
             >
-              <Link href={`/screening/${film.id}`}>Book Now</Link>
+              <Link href={`/screening/${film.id}/#booking`}>Book Now</Link>
             </Button>
             <Button
               asChild
@@ -131,7 +138,7 @@ export default function FilmCard({ film, index = 0 }: FilmCardProps) {
               size="sm"
               className="font-outfit text-xs tracking-wider uppercase border-border/60 hover:border-cinema-gold/40 hover:text-gold transition-all duration-300"
             >
-              <Link href={`/screening/${film.id}`}>Details</Link>
+              <Link href={`/screening/${film.id}/`}>Details</Link>
             </Button>
           </div>
         </CardContent>

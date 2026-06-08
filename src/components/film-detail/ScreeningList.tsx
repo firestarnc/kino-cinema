@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { Calendar, MapPin, Users, DollarSign } from "lucide-react";
+import { Calendar, MapPin, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Screening } from "@/lib/cinema-data";
 import { getRoomById } from "@/lib/cinema-data";

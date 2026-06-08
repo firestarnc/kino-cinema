@@ -1,10 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital@0;1&family=Outfit:wght@400;500;600&display=swap');
 @import "tailwindcss";
 
 @theme {
   /* Font Definitions */
-  --font-serif: "Playfair Display", serif;
-  --font-sans: "Outfit", sans-serif;
+  --font-serif: var(--font-playfair), serif;
+  --font-sans: var(--font-outfit), sans-serif;
 
   /* Your Kino Theme Colors */
   --color-background: hsl(var(--background));
@@ -93,11 +92,11 @@
 @layer utilities {
   /* Font Utilities */
   .font-outfit {
-    font-family: "Outfit", sans-serif;
+    font-family: var(--font-outfit), sans-serif;
   }
 
   .font-playfair {
-    font-family: "Playfair Display", serif;
+    font-family: var(--font-playfair), serif;
   }
 
   /* Color Utilities */
@@ -255,5 +254,23 @@
   .cinema-curtain {
     position: relative;
     background: linear-gradient(180deg, transparent 0%, hsl(var(--background) / 0.5) 100%);
+  }
+
+  .booking-slot-unavailable {
+    opacity: 0.65;
+    text-decoration: line-through;
+    text-decoration-thickness: 1.5px;
+    text-decoration-color: rgba(212, 175, 55, 0.65);
+  }
+}
+
+@media (max-width: 767px), (prefers-reduced-motion: reduce) {
+  .animate-fade-in,
+  .animate-fade-up,
+  .animate-glow-pulse,
+  .animate-float {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
   }
 }

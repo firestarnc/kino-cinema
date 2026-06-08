@@ -8,20 +8,17 @@ import {
   UtensilsCrossed,
   Film,
   Sparkles,
-  Check,
-  ChevronRight,
   Star,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import AdsSection from "@/components/experience/AdsSection";
 import { cn } from "@/lib/utils";
 
 /* -------------------------------------------------------------------------- */
@@ -84,68 +81,13 @@ const serviceFeatures: ServiceFeature[] = [
     icon: Film,
     title: "Custom Programming",
     description:
-      "Request any title from any era. Our film library spans over 100,000 titles, available on demand.",
+      "Request any title from any era. Our film library spans over curated titles, available on demand.",
   },
   {
     icon: Sparkles,
     title: "Special Events",
     description:
       "From intimate birthday celebrations to unforgettable proposals and premiere screenings, we craft the moment.",
-  },
-];
-
-interface MembershipTier {
-  name: string;
-  price: number;
-  features: string[];
-  highlighted: boolean;
-  badge?: string;
-  goldBorder: boolean;
-}
-
-const membershipTiers: MembershipTier[] = [
-  {
-    name: "SILVER",
-    price: 200000,
-    features: [
-      "5 screenings per month",
-      "Standard screening rooms",
-      "Complimentary beverages",
-      "Online booking portal",
-      "Member newsletter",
-    ],
-    highlighted: false,
-    goldBorder: false,
-  },
-  {
-    name: "GOLD",
-    price: 500000,
-    features: [
-      "10 screenings per month",
-      "Premium screening rooms",
-      "Priority booking access",
-      "Gourmet snack pairing",
-      "Guest passes (2/month)",
-      "Exclusive member events",
-    ],
-    highlighted: true,
-    badge: "Most Popular",
-    goldBorder: false,
-  },
-  {
-    name: "PLATINUM",
-    price: 1000000,
-    features: [
-      "Unlimited screenings",
-      "All rooms including VIP suites",
-      "24/7 personal concierge",
-      "Private event hosting",
-      "Complimentary gourmet dining",
-      "Priority new-release access",
-      "Companion membership included",
-    ],
-    highlighted: false,
-    goldBorder: true,
   },
 ];
 
@@ -217,7 +159,7 @@ function PhilosophySection() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 items-center gap-12 md:grid-cols-2 md:gap-16">
           {/* Text */}
-          <div className="animate-fade-up opacity-0" style={{ animationDelay: "0.1s" }}>
+          <div className="animate-fade-up text-center opacity-0 md:text-left" style={{ animationDelay: "0.1s" }}>
             <p className="font-outfit text-xs tracking-[0.3em] uppercase text-gold">
               Our Philosophy
             </p>
@@ -225,11 +167,11 @@ function PhilosophySection() {
               Cinema Is Not Watched.{" "}
               <span className="text-primary">It Is Felt.</span>
             </h2>
-            <Separator className="my-6 w-16 bg-primary/40" />
+            <Separator className="mx-auto my-6 w-16 bg-primary/40 md:mx-0" />
             <p className="font-outfit text-base leading-relaxed text-muted-foreground md:text-lg">
-              NOIR was founded on a singular belief: that cinema deserves more
+              KINO was founded on a singular belief: that cinema deserves more
               than a crowded auditorium and a sticky floor. It deserves reverence.
-              Every screening at NOIR is an occasion -- a confluence of
+              Every screening at KINO is an occasion -- a confluence of
               world-class projection, impeccable acoustics, and an atmosphere so
               deliberate you feel it the moment you cross our threshold.
             </p>
@@ -255,7 +197,7 @@ function PhilosophySection() {
               <div className="absolute inset-8 flex flex-col items-center justify-center rounded-sm bg-cinema-surface/60 backdrop-blur-sm">
                 <Film className="mb-4 h-10 w-10 text-primary/60" />
                 <p className="font-playfair text-2xl italic text-foreground/80 md:text-3xl">
-                  Est. 2024
+                  Est. 2026
                 </p>
                 <p className="mt-2 font-outfit text-xs tracking-[0.3em] uppercase text-muted-foreground">
                   The Art of Private Cinema
@@ -294,8 +236,7 @@ function TechnologySection() {
           </h2>
           <p className="mx-auto mt-4 max-w-xl font-outfit text-base text-muted-foreground">
             Every room is built to reference-grade standards, delivering an
-            experience that rivals the finest post-production studios in the
-            world.
+            experience that rivals the finest post-production studios in Benin City.
           </p>
         </div>
 
@@ -308,7 +249,7 @@ function TechnologySection() {
               )}
               style={{ animationDelay: `${0.1 + index * 0.1}s` }}
             >
-              <CardHeader className="pb-3">
+              <CardHeader className="items-center pb-3 text-center sm:items-start sm:text-left">
                 <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors duration-300 group-hover:bg-primary/20 group-hover:text-cinema-gold">
                   <feature.icon className="h-5 w-5" />
                 </div>
@@ -316,7 +257,7 @@ function TechnologySection() {
                   {feature.title}
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="text-center sm:text-left">
                 <p className="font-outfit text-sm leading-relaxed text-muted-foreground">
                   {feature.description}
                 </p>
@@ -350,7 +291,7 @@ function ServiceSection() {
           {serviceFeatures.map((feature, index) => (
             <div
               key={feature.title}
-              className="animate-fade-up group flex gap-5 opacity-0"
+              className="animate-fade-up group flex flex-col items-center gap-4 text-center opacity-0 md:flex-row md:items-start md:gap-5 md:text-left"
               style={{ animationDelay: `${0.1 + index * 0.1}s` }}
             >
               <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-border/30 bg-cinema-surface text-primary transition-all duration-300 group-hover:border-primary/30 group-hover:text-cinema-gold group-hover:velvet-glow">
@@ -365,115 +306,6 @@ function ServiceSection() {
                 </p>
               </div>
             </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function MembershipSection() {
-  return (
-    <section className="relative py-20 md:py-28">
-      {/* Background accents */}
-      <div className="pointer-events-none absolute right-0 top-0 h-[300px] w-[400px] rounded-full bg-primary/4 blur-[100px]" />
-
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-14 text-center md:mb-16">
-          <p className="font-outfit text-xs tracking-[0.3em] uppercase text-gold">
-            Exclusive Access
-          </p>
-          <h2 className="mt-4 font-playfair text-3xl font-semibold italic text-foreground md:text-4xl lg:text-5xl">
-            Membership
-          </h2>
-          <p className="mx-auto mt-4 max-w-xl font-outfit text-base text-muted-foreground">
-            Choose the tier that suits your lifestyle. Every membership opens the
-            door to a world of private cinema, refined hospitality, and
-            unforgettable evenings.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          {membershipTiers.map((tier, index) => (
-            <Card
-              key={tier.name}
-              className={cn(
-                "animate-fade-up relative flex flex-col border-border/30 bg-cinema-surface opacity-0 transition-all duration-500 hover:border-primary/30",
-                tier.highlighted &&
-                  "border-primary/40 velvet-glow-strong md:-mt-4 md:mb-4",
-                tier.goldBorder &&
-                  "border-cinema-gold/30 shadow-[0_0_40px_hsl(38_75%_55%/0.08)]"
-              )}
-              style={{ animationDelay: `${0.1 + index * 0.15}s` }}
-            >
-              {/* Badge for highlighted tier */}
-              {tier.badge ? (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <Badge className="border-0 bg-primary px-4 py-1 font-outfit text-[10px] tracking-widest uppercase text-primary-foreground">
-                    {tier.badge}
-                  </Badge>
-                </div>
-              ) : null}
-
-              <CardHeader className="items-center pb-2 pt-8 text-center">
-                <p
-                  className={cn(
-                    "font-outfit text-xs tracking-[0.4em] uppercase",
-                    tier.goldBorder ? "text-gold" : "text-muted-foreground"
-                  )}
-                >
-                  {tier.name}
-                </p>
-                <CardTitle className="mt-3 flex items-baseline justify-center gap-1">
-                  <span className="font-playfair text-4xl font-bold text-foreground md:text-5xl">
-                    ₦{tier.price}
-                  </span>
-                  <span className="font-outfit text-sm text-muted-foreground">
-                    /month
-                  </span>
-                </CardTitle>
-              </CardHeader>
-
-              <Separator className="mx-6 my-2 bg-border/40" />
-
-              <CardContent className="flex-1 pt-4">
-                <ul className="space-y-3">
-                  {tier.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-3">
-                      <Check
-                        className={cn(
-                          "mt-0.5 h-4 w-4 shrink-0",
-                          tier.goldBorder ? "text-cinema-gold" : "text-primary"
-                        )}
-                      />
-                      <span className="font-outfit text-sm text-muted-foreground">
-                        {feature}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-
-              <CardFooter className="pt-4">
-                <Button
-                  asChild
-                  className={cn(
-                    "w-full font-outfit text-xs tracking-widest uppercase transition-all duration-300",
-                    tier.goldBorder
-                      ? "border border-cinema-gold/40 bg-cinema-gold/10 text-cinema-gold hover:bg-cinema-gold/20"
-                      : tier.highlighted
-                        ? "velvet-glow hover:velvet-glow-strong"
-                        : "bg-secondary text-secondary-foreground hover:bg-secondary/70"
-                  )}
-                  size="lg"
-                >
-                  <Link href="/book">
-                    Join Now
-                    <ChevronRight className="ml-1 h-4 w-4" />
-                  </Link>
-                </Button>
-              </CardFooter>
-            </Card>
           ))}
         </div>
       </div>
@@ -507,7 +339,7 @@ function CtaSection() {
             size="lg"
             className="velvet-glow min-w-[220px] font-outfit text-xs tracking-widest uppercase transition-all duration-300 hover:velvet-glow-strong"
           >
-            <Link href="/book">Book Your First Screening</Link>
+            <Link href="/book/">Book Your First Screening</Link>
           </Button>
           <Button
             asChild
@@ -538,7 +370,7 @@ export default function Experience() {
       <Separator className="mx-auto max-w-7xl opacity-10" />
       <ServiceSection />
       <Separator className="mx-auto max-w-7xl opacity-10" />
-      <MembershipSection />
+      <AdsSection />
       <Separator className="mx-auto max-w-7xl opacity-10" />
       <CtaSection />
     </>

@@ -65,7 +65,7 @@ export default function HeroSection() {
             size="lg"
             className="velvet-glow px-8 py-6 text-base font-outfit"
           >
-            <Link href="/nowshowing">Explore Shows</Link>
+            <Link href="/now-showing">Explore Shows</Link>
           </Button>
           <Button
             asChild
@@ -73,7 +73,7 @@ export default function HeroSection() {
             size="lg"
             className="px-8 py-6 text-base font-outfit border-muted-foreground/30 hover:border-primary/50 hover:bg-primary/5"
           >
-            <Link href="/rooms">Room Experience</Link>
+            <Link href="/experience">Room Experience</Link>
           </Button>
         </div>
 

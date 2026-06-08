@@ -1,17 +1,17 @@
 import Link from "next/link"
 import { Film, Instagram, Twitter } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { businessDetails } from "@/lib/site";
 
 const navigateLinks = [
-  { href: "/now-showing", label: "Now Showing" },
-  { href: "/private-rooms", label: "Private Rooms" },
-  { href: "/book", label: "Book Tickets" },
+  { href: "/now-showing/", label: "Now Showing" },
+  { href: "/book/", label: "Book Tickets" },
 ] as const;
 
 const experienceLinks = [
-  { href: "/experience", label: "The Experience" },
-  { href: "/membership", label: "Membership" },
-  { href: "/contact", label: "Contact" },
+  { href: "/experience/", label: "The Experience" },
+  { href: "/membership/", label: "Membership" },
+  { href: "/experience/#advertise", label: "Advertise on our Screen" },
 ] as const;
 
 export default function Footer() {
@@ -21,7 +21,7 @@ export default function Footer() {
     <footer className="relative border-t border-border/20 bg-background">
       {/* Top section */}
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
-        <div className="grid grid-cols-1 gap-10 md:grid-cols-3 md:gap-8">
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-4 md:gap-8">
           {/* Branding column */}
           <div className="space-y-4">
             <Link href="/" className="group inline-flex items-center gap-2">
@@ -31,12 +31,12 @@ export default function Footer() {
                 <span className="mx-1.5 inline-block text-gold opacity-60">
                   &#9670;
                 </span>
-                CINEMA
+                SCREENS
               </span>
             </Link>
             <p className="max-w-xs font-outfit text-sm leading-relaxed text-muted-foreground">
-              An intimate private cinema experience. Velvet seats, curated
-              screenings, and an atmosphere of timeless elegance.
+              Luxury private cinema in Benin City with premium rooms, curated
+              screenings, and memorable experiences for every special moment.
             </p>
           </div>
 
@@ -77,6 +77,19 @@ export default function Footer() {
               ))}
             </ul>
           </div>
+
+          {/* Local info column */}
+          <div>
+            <h4 className="mb-4 font-playfair text-sm uppercase tracking-widest text-foreground">
+              Benin City
+            </h4>
+            <ul className="space-y-2 font-outfit text-sm text-muted-foreground">
+              <li>{businessDetails.locality}, {businessDetails.region}</li>
+              <li>Nigeria</li>
+              <li>Hours: {businessDetails.openingHours}</li>
+              {businessDetails.phone ? <li>Phone: {businessDetails.phone}</li> : null}
+            </ul>
+          </div>
         </div>
       </div>
 
@@ -86,7 +99,7 @@ export default function Footer() {
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
           <p className="font-outfit text-xs text-muted-foreground">
-            &copy; {currentYear} Kino Cinema. All rights reserved.
+            &copy; {currentYear} Kino Screens. All rights reserved.
           </p>
 
           <div className="flex items-center gap-4">

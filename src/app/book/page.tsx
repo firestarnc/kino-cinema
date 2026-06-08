@@ -1,49 +1,39 @@
-"use client";
-
 import Link from "next/link";
-import { useEffect } from "react";
-import { usePathname } from "next/navigation";
-import { Film } from "lucide-react";
+import { Clapperboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import PrivateBookingPanel from "@/components/film-detail/PrivateBookingPanel";
 
-export default function NotFound() {
-  const pathname = usePathname();
-
-  useEffect(() => {
-    console.error(
-      "404 Error: User attempted to access non-existent route:",
-      pathname
-    );
-  }, [pathname]);
-
+export default function BookPage() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-6">
+    <div className="relative min-h-screen overflow-hidden bg-background px-6 py-16">
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-1/2 top-1/3 h-96 w-96 -translate-x-1/2 rounded-full bg-primary/5 blur-3xl" />
+        <div className="absolute left-1/2 top-24 h-[28rem] w-[28rem] -translate-x-1/2 rounded-full bg-primary/10 blur-[140px]" />
       </div>
 
-      <div className="relative z-10 text-center">
-        <Film className="mx-auto mb-6 h-12 w-12 text-primary/40" />
+      <div className="relative mx-auto max-w-7xl">
+        <div className="max-w-3xl">
+          <div className="flex items-center gap-3 text-gold">
+            <Clapperboard className="h-5 w-5" />
+            <span className="font-outfit text-xs uppercase tracking-[0.35em]">
+              Cut The Chase
+            </span>
+          </div>
 
-        <h1 className="font-playfair text-7xl font-bold italic text-primary">
-          404
-        </h1>
+          <h1 className="mt-6 font-playfair text-4xl font-bold text-foreground md:text-6xl">
+            Book the cinema before choosing the movie.
+          </h1>
+          <p className="mt-4 font-outfit text-base leading-relaxed text-muted-foreground md:text-lg">
+            This is the fast path for guests who want to reserve the private cinema first. Choose a package,
+            select your preferred date and time slot, and decide what movie to watch when you arrive in person.
+          </p>
 
-        <p className="mt-4 font-playfair text-2xl text-foreground">
-          The Reel Has Run Out
-        </p>
-
-        <p className="mt-2 font-outfit text-muted-foreground">
-          This screening doesn't exist. The projector has gone dark.
-        </p>
-
-        <Button
-          asChild
-          className="velvet-glow mt-8 font-outfit text-xs tracking-widest uppercase"
-        >
-          <Link href="/">Return to Lobby</Link>
-        </Button>
+          <Button asChild className="velvet-glow mt-8 font-outfit text-xs uppercase tracking-[0.3em]">
+            <Link href="#booking">Start booking</Link>
+          </Button>
+        </div>
       </div>
+
+      <PrivateBookingPanel bookingMode="package-only" />
     </div>
   );
 }

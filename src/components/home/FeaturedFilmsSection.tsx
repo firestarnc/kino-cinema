@@ -5,13 +5,13 @@ import { getFeaturedFilms } from "@/lib/cinema-data";
 import type { Film } from "@/lib/cinema-data";
 
 const genreGradients: Record<string, string> = {
-  "Neo-Noir Thriller":
+  "Action Thriller":
     "from-red-950/90 via-slate-900/80 to-neutral-950/90",
-  "Psychological Drama":
+  "Thriller Drama":
     "from-indigo-950/90 via-slate-900/80 to-neutral-950/90",
-  "Musical Thriller":
+  "Romantic Drama":
     "from-purple-950/90 via-rose-950/80 to-neutral-950/90",
-  "Gothic Mystery":
+  "Romantic Comedy":
     "from-emerald-950/90 via-slate-900/80 to-neutral-950/90",
 };
 
@@ -22,7 +22,7 @@ function FilmCard({ film, index }: { film: Film; index: number }) {
 
   return (
     <Link
-      href={`/films/${film.id}`}
+      href={`/screening/${film.id}/`}
       className="group relative flex flex-col overflow-hidden rounded-lg border border-border/50 bg-card transition-all duration-500 hover:scale-[1.02] hover:velvet-glow hover:border-primary/30 opacity-0 animate-fade-up"
       style={{ animationDelay: `${0.2 + index * 0.15}s` }}
     >
@@ -118,7 +118,7 @@ export default function FeaturedFilmsSection() {
           style={{ animationDelay: "0.9s" }}
         >
           <Link
-            href="/films"
+            href="/now-showing"
             className="font-outfit text-sm text-muted-foreground hover:text-gold transition-colors duration-300 flex items-center gap-2 group"
           >
             View All Films

@@ -17,9 +17,10 @@ import { cn } from "@/lib/utils";
 
 
 const navLinks = [
-  { href: "/now-showing", label: "Now Showing" },
-  { href: "/experience", label: "Experience" },
-  { href: "/support", label: "Support" },
+  { href: "/", label: "Homepage" },
+  { href: "/now-showing/", label: "Now Showing" },
+  { href: "/experience/", label: "Experience" },
+  { href: "/membership/", label: "Membership" },
 ] as const;
 
 export default function Header() {
@@ -50,11 +51,11 @@ export default function Header() {
             <Link
             href="/"
             className="group relative block h-8 w-[120px] sm:h-9 sm:w-[140px] md:h-10 md:w-[170px]"
-            aria-label="Kino Cinema Home"
+            aria-label="Kino Screens Home"
           >
             <Image
               src="/logo.svg"
-              alt="Kino Cinema Logo Benin City"
+              alt="Kino Screens Logo Benin City"
               fill
               sizes="(max-width: 640px) 120px, (max-width: 768px) 140px, 170px"
               className="object-contain object-left"
@@ -90,7 +91,7 @@ export default function Header() {
               asChild
               className="velvet-glow font-outfit text-xs tracking-widest uppercase transition-all duration-300 hover:velvet-glow-strong"
             >
-              <Link href="/now-showing">
+              <Link href="/book/">
                 <Ticket className="mr-1.5 h-4 w-4" />
                 Book Now
               </Link>
@@ -120,11 +121,11 @@ export default function Header() {
                       href="/"
                       onClick={() => setMobileOpen(false)}
                       className="relative block h-8 w-[130px]"
-                      aria-label="Kino Cinema Home"
+                      aria-label="Kino Screens Home"
                     >
                       <Image
                         src="/logo.svg"
-                        alt="Kino Cinema Logo Benin City"
+                        alt="Kino Screens Logo Benin City"
                         fill
                         sizes="130px"
                         className="object-contain object-left"
@@ -161,7 +162,7 @@ export default function Header() {
                     className="velvet-glow w-full font-outfit text-xs tracking-widest uppercase"
                     onClick={() => setMobileOpen(false)}
                   >
-                    <Link href="/now-showing">
+                    <Link href="/book/">
                       <Ticket className="mr-1.5 h-4 w-4" />
                       Book Now
                     </Link>

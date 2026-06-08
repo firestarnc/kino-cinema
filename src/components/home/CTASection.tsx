@@ -43,7 +43,8 @@ export default function CTASection() {
             style={{ animationDelay: "0.4s" }}
           >
             Reserve your private screening room and discover a new standard
-            of cinematic luxury.
+            of cinematic luxury, or place your brand on our screens to reach
+            an engaged premium audience.
           </p>
 
           {/* CTA Button */}
@@ -56,7 +57,7 @@ export default function CTASection() {
               size="lg"
               className="velvet-glow-strong px-10 py-6 text-base font-outfit"
             >
-              <Link href="/screenings">
+              <Link href="/now-showing">
                 Book Your Private Screening
               </Link>
             </Button>

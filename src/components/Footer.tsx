@@ -1,7 +1,21 @@
-import Link from "next/link"
-import { Film, Instagram, Twitter } from "lucide-react";
+import Link from "next/link";
+import { Film, Instagram } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { businessDetails } from "@/lib/site";
+
+function TikTokIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      focusable="false"
+      className={className}
+      fill="currentColor"
+    >
+      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.73h-3.18v12.97a2.9 2.9 0 1 1-2.9-2.9c.25 0 .5.03.74.1V8.9a6.1 6.1 0 0 0-.74-.05 6.08 6.08 0 1 0 6.08 6.08V8.37a7.97 7.97 0 0 0 4.67 1.5V6.69h-.9z" />
+    </svg>
+  );
+}
 
 const navigateLinks = [
   { href: "/now-showing/", label: "Now Showing" },
@@ -84,10 +98,10 @@ export default function Footer() {
               Benin City
             </h4>
             <ul className="space-y-2 font-outfit text-sm text-muted-foreground">
-              <li>{businessDetails.locality}, {businessDetails.region}</li>
+              <li> <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${businessDetails.streetAddress}, ${businessDetails.locality}, ${businessDetails.region}`)}`} target="_blank" rel="noopener noreferrer">Avenue 28th, {businessDetails.locality}, {businessDetails.region}</a></li>
               <li>Nigeria</li>
               <li>Hours: {businessDetails.openingHours}</li>
-              {businessDetails.phone ? <li>Phone: {businessDetails.phone}</li> : null}
+              {businessDetails.phone ? <li>Phone: <a href={`tel:${businessDetails.phone}`}>{businessDetails.phone}</a></li> : null}
             </ul>
           </div>
         </div>
@@ -104,7 +118,7 @@ export default function Footer() {
 
           <div className="flex items-center gap-4">
             <a
-              href="https://instagram.com"
+              href="https://www.instagram.com/kino_screens?igsh=MWxsdHRuMW84Z3lu"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Instagram"
@@ -113,13 +127,13 @@ export default function Footer() {
               <Instagram className="h-4 w-4" />
             </a>
             <a
-              href="https://x.com"
+              href="https://www.tiktok.com/@kinoscreens?_r=1&_t=ZS-972bPX8NgbB"
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="X (Twitter)"
+              aria-label="TikTok"
               className="text-muted-foreground transition-colors duration-300 hover:text-cinema-gold"
             >
-              <Twitter className="h-4 w-4" />
+              <TikTokIcon className="h-4 w-4" />
             </a>
           </div>
         </div>

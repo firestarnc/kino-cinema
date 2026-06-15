@@ -29,6 +29,7 @@ export default function FilmCard({ film, index = 0 }: FilmCardProps) {
   const gradient =
     genreGradients[film.genre] ??
     "from-primary/40 via-primary/20 to-background";
+  const screeningPath = `/screening/${film.id}/`;
 
   return (
     <div
@@ -130,7 +131,7 @@ export default function FilmCard({ film, index = 0 }: FilmCardProps) {
               size="sm"
               className="flex-1 velvet-glow font-outfit text-xs tracking-wider uppercase transition-all duration-300 hover:velvet-glow-strong"
             >
-              <Link href={`/screening/${film.id}/#booking`}>Book Now</Link>
+              <Link href={`${screeningPath}#booking`}>Book Now</Link>
             </Button>
             <Button
               asChild
@@ -138,7 +139,7 @@ export default function FilmCard({ film, index = 0 }: FilmCardProps) {
               size="sm"
               className="font-outfit text-xs tracking-wider uppercase border-border/60 hover:border-cinema-gold/40 hover:text-gold transition-all duration-300"
             >
-              <Link href={`/screening/${film.id}/`}>Details</Link>
+              <Link href={screeningPath}>Details</Link>
             </Button>
           </div>
         </CardContent>

@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "next/link";
 import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -10,14 +8,14 @@ export default function HeroSection() {
       {/* Background radial glow */}
       <div className="pointer-events-none absolute inset-0">
         <div
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-150 w-150 rounded-full animate-glow-pulse"
+          className="absolute left-1/2 top-1/2 hidden h-150 w-150 -translate-x-1/2 -translate-y-1/2 rounded-full md:block md:animate-glow-pulse"
           style={{
             background:
               "radial-gradient(circle, hsl(var(--primary) / 0.12) 0%, hsl(var(--primary) / 0.04) 40%, transparent 70%)",
           }}
         />
         <div
-          className="absolute left-1/4 top-1/4 h-75 w-75 rounded-full animate-glow-pulse"
+          className="absolute left-1/4 top-1/4 hidden h-75 w-75 rounded-full md:block md:animate-glow-pulse"
           style={{
             background:
               "radial-gradient(circle, hsl(var(--cinema-gold) / 0.04) 0%, transparent 60%)",
@@ -65,7 +63,7 @@ export default function HeroSection() {
             size="lg"
             className="velvet-glow px-8 py-6 text-base font-outfit"
           >
-            <Link href="/now-showing">Explore Shows</Link>
+            <Link href="/now-showing/">Explore Shows</Link>
           </Button>
           <Button
             asChild
@@ -73,7 +71,7 @@ export default function HeroSection() {
             size="lg"
             className="px-8 py-6 text-base font-outfit border-muted-foreground/30 hover:border-primary/50 hover:bg-primary/5"
           >
-            <Link href="/experience">Room Experience</Link>
+            <Link href="/experience/">Room Experience</Link>
           </Button>
         </div>
 

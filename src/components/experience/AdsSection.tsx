@@ -64,7 +64,7 @@ export default function AdsSection() {
   }
 
   return (
-    <section id="advertise" className="relative py-20 md:py-28 scroll-mt-24">
+    <section id="advertise" className="relative overflow-hidden py-20 md:py-28 scroll-mt-24">
       <div className="pointer-events-none absolute left-1/2 top-1/2 h-[380px] w-[580px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/8 blur-[110px]" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

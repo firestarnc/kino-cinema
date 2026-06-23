@@ -43,6 +43,7 @@
     color: hsl(var(--foreground));
     /* Set Outfit as the default font */
     font-family: var(--font-sans);
+    overflow-x: hidden;
   }
 
   h1, h2, h3, h4, h5, h6 {

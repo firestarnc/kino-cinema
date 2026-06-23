@@ -39,3 +39,22 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Graphify outputs
+/graphify-out/
+
+
+# AI Context Storage
+.context-mode/
+
+# Basics for AI token reduction
+.claude/
+.codex/
+.gemini/
+.github/
+.graphifyignore
+.vscode/
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+scripts/

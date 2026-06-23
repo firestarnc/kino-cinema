@@ -26,7 +26,7 @@ export const PRIVATE_PACKAGES: PrivatePackage[] = [
     capacity: "1-2 persons",
     priceNaira: 120000,
     perks: [
-      "One bottle of wine",
+      "A bottle of wine",
       "Unlimited popcorn",
       "Water",
       "Small chops",

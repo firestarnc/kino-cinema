@@ -1,4 +1,5 @@
 import { getSupabaseAdminClient } from "@/lib/supabase-admin";
+import { sendAdminNotification } from "@/lib/booking-email";
 import type { Database } from "@/lib/database.types";
 
 type PrivateBookingRow = Database["public"]["Tables"]["private_bookings"]["Row"];
@@ -21,6 +22,18 @@ export async function markBookingPaid(reference: string) {
     .update({ status: "paid", paid_at: new Date().toISOString() })
     .eq("paystack_reference", reference)
     .eq("status", "pending_payment");
+
+  if (!error) {
+    // fetch the booking and notify admins (fire-and-forget)
+    try {
+      const booking = await getBookingByReference(reference);
+      if (booking) {
+        void sendAdminNotification(booking, "paid");
+      }
+    } catch (e) {
+      // do not block the flow on notification errors
+    }
+  }
 
   return error;
 }

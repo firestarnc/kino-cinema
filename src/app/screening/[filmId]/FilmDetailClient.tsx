@@ -64,7 +64,7 @@ export default function FilmDetail({ filmId }: FilmDetailClientProps) {
 
       <Separator className="mx-auto max-w-7xl opacity-20" />
 
-      <PrivateBookingPanel filmId={film.id} filmTitle={film.title} />
+      <PrivateBookingPanel filmId={film.id} filmTitle={film.title} bookingType="blockbuster" />
 
       {/* Bottom spacing */}
       <div className="h-16" />

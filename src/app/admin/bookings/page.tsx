@@ -25,9 +25,10 @@ export default async function AdminBookingsPage() {
             <tr className="text-left">
               <th className="px-4 py-3 font-outfit text-xs uppercase tracking-wider text-muted-foreground">Created</th>
               <th className="px-4 py-3 font-outfit text-xs uppercase tracking-wider text-muted-foreground">Customer</th>
+              <th className="px-4 py-3 font-outfit text-xs uppercase tracking-wider text-muted-foreground">Type</th>
               <th className="px-4 py-3 font-outfit text-xs uppercase tracking-wider text-muted-foreground">Schedule</th>
               <th className="px-4 py-3 font-outfit text-xs uppercase tracking-wider text-muted-foreground">Package</th>
-              <th className="px-4 py-3 font-outfit text-xs uppercase tracking-wider text-muted-foreground">Movie</th>
+              <th className="px-4 py-3 font-outfit text-xs uppercase tracking-wider text-muted-foreground">Title</th>
               <th className="px-4 py-3 font-outfit text-xs uppercase tracking-wider text-muted-foreground">Status</th>
               <th className="px-4 py-3 font-outfit text-xs uppercase tracking-wider text-muted-foreground">Reference</th>
             </tr>
@@ -35,7 +36,7 @@ export default async function AdminBookingsPage() {
           <tbody>
             {bookings.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-4 py-10 text-center font-outfit text-sm text-muted-foreground">
+                <td colSpan={8} className="px-4 py-10 text-center font-outfit text-sm text-muted-foreground">
                   No bookings found yet.
                 </td>
               </tr>
@@ -51,15 +52,25 @@ export default async function AdminBookingsPage() {
                     <p className="text-xs text-muted-foreground">{booking.phone_number}</p>
                   </td>
                   <td className="px-4 py-3 font-outfit text-sm text-foreground/90">
+                    <span className="rounded-full border border-primary/40 bg-primary/10 px-2 py-1 text-xs uppercase tracking-wider text-gold">
+                      {booking.booking_type}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 font-outfit text-sm text-foreground/90">
                     <p>{booking.booking_date}</p>
                     <p className="text-xs text-muted-foreground">{booking.time_slot}</p>
                   </td>
                   <td className="px-4 py-3 font-outfit text-sm text-foreground/90">
                     <p>{booking.package_name}</p>
                     <p className="text-xs text-gold">{formatNaira(booking.package_price_ngn)}</p>
+                    {booking.additional_guests > 0 ? (
+                      <p className="text-xs text-muted-foreground">Extra guests: {booking.additional_guests}</p>
+                    ) : null}
                   </td>
                   <td className="px-4 py-3 font-outfit text-sm text-foreground/90">
-                    {booking.film_title ?? "Chosen in person"}
+                    {booking.booking_type === "movie-package"
+                      ? `${booking.content_title ?? "Selected in booking"}${booking.content_platform ? ` • ${booking.content_platform}` : ""}`
+                      : (booking.film_title ?? "Chosen in person")}
                   </td>
                   <td className="px-4 py-3 font-outfit text-sm">
                     <span className="rounded-full border border-cinema-gold/60 bg-cinema-gold/20 px-2 py-1 text-xs uppercase tracking-wider text-gold">

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import NowShowingClient from "@/components/screenings/NowShowingClient";
+import BookingSelector from "@/components/booking/booking-selector";
 import { siteUrl } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -19,5 +19,5 @@ export const metadata: Metadata = {
 };
 
 export default function NowShowingPage() {
-  return <NowShowingClient />;
+  return <BookingSelector />;
 }

@@ -61,7 +61,7 @@ export default function NowShowingClient() {
           <div className="mb-4 flex items-center gap-3 text-cinema-gold opacity-0 animate-fade-in" style={{ animationDelay: "100ms" }}>
             <Clapperboard className="h-5 w-5" />
             <span className="font-outfit text-xs uppercase tracking-[0.3em]">
-              Private Cinema Collection
+             Direct From Theaters
             </span>
           </div>
 
@@ -69,14 +69,14 @@ export default function NowShowingClient() {
             className="font-playfair text-4xl font-bold tracking-tight text-foreground opacity-0 animate-fade-up sm:text-5xl md:text-6xl"
             style={{ animationDelay: "200ms" }}
           >
-            Now <span className="text-gold-gradient">Showing</span>
+            First-Run <span className="text-gold-gradient">Cinema Releases</span>
           </h1>
 
           <p
             className="mt-4 max-w-xl font-outfit text-base leading-relaxed text-muted-foreground opacity-0 animate-fade-up md:text-lg"
             style={{ animationDelay: "350ms" }}
           >
-            Explore what is currently showing and pick a title for your next cinema experience.
+            Explore exclusive, major studio films currently playing in commercial theaters worldwide and pick a title for your next cinema experience.
           </p>
         </div>
       </section>

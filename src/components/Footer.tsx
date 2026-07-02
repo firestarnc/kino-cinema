@@ -19,7 +19,7 @@ function TikTokIcon({ className }: { className?: string }) {
 
 const navigateLinks = [
   { href: "/now-showing/", label: "Now Showing" },
-  { href: "/book/", label: "Book Tickets" },
+  { href: "/movie-package/book/", label: "Book Tickets" },
 ] as const;
 
 const experienceLinks = [

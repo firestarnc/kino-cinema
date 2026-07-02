@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { useState } from "react";
 import { Star, Clock, User } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +11,7 @@ import type { Film } from "@/lib/cinema-data";
 interface FilmCardProps {
   film: Film;
   index?: number;
+  onImageLoad?: () => void;
 }
 
 const genreGradients: Record<string, string> = {
@@ -25,11 +27,12 @@ const genreGradients: Record<string, string> = {
     "from-red-950/60 via-primary/40 to-background",
 };
 
-export default function FilmCard({ film, index = 0 }: FilmCardProps) {
+export default function FilmCard({ film, index = 0, onImageLoad }: FilmCardProps) {
   const gradient =
     genreGradients[film.genre] ??
     "from-primary/40 via-primary/20 to-background";
   const screeningPath = `/screening/${film.id}/`;
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
 
   return (
     <div
@@ -43,19 +46,25 @@ export default function FilmCard({ film, index = 0 }: FilmCardProps) {
         )}
       >
         {/* Poster area */}
-        <div className="relative flex h-64 items-end overflow-hidden">
+        <div className="relative flex h-64 items-end overflow-hidden bg-secondary/40">
+          <div className="absolute inset-0 animate-pulse bg-linear-to-r from-secondary/40 via-secondary/70 to-secondary/40" />
+
           <Image
             src={film.posterUrl}
             alt={film.title}
             fill
-            className="object-cover p-2 transition-transform duration-700 group-hover:scale-105"
+            className={cn("object-cover p-2 transition-transform duration-700 group-hover:scale-105", isImageLoaded ? "opacity-100" : "opacity-0")}
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             priority={index === 0}
+            onLoad={() => {
+              setIsImageLoaded(true);
+              if (onImageLoad) onImageLoad();
+            }}
           />
 
           <div
             className={cn(
-              "absolute inset-0 bg-gradient-to-t",
+              "absolute inset-0 bg-linear-to-t",
               gradient
             )}
           />
@@ -73,7 +82,7 @@ export default function FilmCard({ film, index = 0 }: FilmCardProps) {
           </div>
 
           {/* Film title overlay on poster */}
-          <div className="relative z-10 w-full bg-gradient-to-t from-card via-card/80 to-transparent px-5 pb-4 pt-12">
+          <div className="relative z-10 w-full bg-linear-to-t from-card via-card/80 to-transparent px-5 pb-4 pt-12">
             <h3 className="font-playfair text-xl font-bold leading-tight text-foreground transition-colors duration-300 group-hover:text-gold">
               {film.title}
             </h3>
@@ -89,10 +98,9 @@ export default function FilmCard({ film, index = 0 }: FilmCardProps) {
           >
             {film.rating}
           </Badge>
-        </div>
-
-        <CardContent className="space-y-4 p-5">
+          </div>
           {/* Meta row: genre, duration, IMDB */}
+          <CardContent className="space-y-4 p-5">
           <div className="flex flex-wrap items-center gap-2">
             <Badge
               variant="secondary"

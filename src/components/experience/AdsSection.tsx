@@ -20,7 +20,8 @@ export default function AdsSection() {
     setStatus("submitting");
     setErrorMessage("");
 
-    const form = new FormData(event.currentTarget);
+    const formElement = event.currentTarget;
+    const form = new FormData(formElement);
     const payload = {
       fullName: String(form.get("fullName") ?? "").trim(),
       companyName: String(form.get("companyName") ?? "").trim(),
@@ -49,7 +50,7 @@ export default function AdsSection() {
         return;
       }
 
-      event.currentTarget.reset();
+      formElement.reset();
       setStatus("success");
       toast.success("Request sent", {
         description: "We would reach out immediately via contact@kinoscreens.com.",

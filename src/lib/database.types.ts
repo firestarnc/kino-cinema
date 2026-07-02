@@ -4,11 +4,15 @@ export interface Database {
       private_bookings: {
         Row: {
           id: string;
+          booking_type: "blockbuster" | "movie-package";
           film_id: string | null;
           film_title: string | null;
+          content_platform: string | null;
+          content_title: string | null;
           package_id: string;
           package_name: string;
           package_price_ngn: number;
+          additional_guests: number;
           booking_date: string;
           time_slot: string;
           full_name: string;
@@ -23,11 +27,15 @@ export interface Database {
         };
         Insert: {
           id?: string;
+          booking_type?: "blockbuster" | "movie-package";
           film_id?: string | null;
           film_title?: string | null;
+          content_platform?: string | null;
+          content_title?: string | null;
           package_id: string;
           package_name: string;
           package_price_ngn: number;
+          additional_guests?: number;
           booking_date: string;
           time_slot: string;
           full_name: string;
@@ -42,11 +50,15 @@ export interface Database {
         };
         Update: {
           id?: string;
+          booking_type?: "blockbuster" | "movie-package";
           film_id?: string | null;
           film_title?: string | null;
+          content_platform?: string | null;
+          content_title?: string | null;
           package_id?: string;
           package_name?: string;
           package_price_ngn?: number;
+          additional_guests?: number;
           booking_date?: string;
           time_slot?: string;
           full_name?: string;

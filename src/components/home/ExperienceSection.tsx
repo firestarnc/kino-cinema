@@ -9,6 +9,12 @@ interface Feature {
 
 const features: Feature[] = [
   {
+    icon: Megaphone,
+    title: "Advertise on Screen",
+    description:
+      "Show your video ads in front of premium viewers with elegant continuous playback options tailored to your campaign goals.",
+  },
+  {
     icon: Lock,
     title: "Private Screenings",
     description:
@@ -31,12 +37,6 @@ const features: Feature[] = [
     title: "State of the Art",
     description:
       "Dolby Atmos immersive audio, 4K laser projection, and acoustically engineered rooms built for cinematic perfection.",
-  },
-  {
-    icon: Megaphone,
-    title: "Advertise on Screen",
-    description:
-      "Show your video ads in front of premium viewers with elegant continuous playback options tailored to your campaign goals.",
   },
 ];
 
@@ -99,7 +99,7 @@ export default function ExperienceSection() {
         </div>
 
         {/* Feature grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 md:gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 md:gap-5 max-w-7xl mx-auto">
           {features.map((feature, i) => (
             <FeatureCard key={feature.title} feature={feature} index={i} />
           ))}

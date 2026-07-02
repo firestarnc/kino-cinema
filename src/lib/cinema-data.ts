@@ -25,6 +25,22 @@ export interface Film {
   imdbRating: number;
 }
 
+export interface MoviePackageFilm {
+  id: string;
+  title: string;
+  tagline: string;
+  genre: string;
+  duration: number;
+  rating: FilmRating;
+  year: number;
+  director: string;
+  cast: string[];
+  synopsis: string;
+  posterFile: string;
+  posterUrl: string;
+  imdbRating?: number;
+}
+
 export type RoomTier = "standard" | "premium" | "vip" | "ultra";
 
 export interface CinemaRoom {
@@ -146,6 +162,351 @@ export const films: Film[] = [
     backdropUrl: "/backdrops/film-5.jpeg",
     trailerUrl: "",
     imdbRating: 8.5,
+  },
+];
+
+// -----------------------------------------------------------------------------
+// Movie Package Data
+// -----------------------------------------------------------------------------
+
+const MOVIE_PACKAGE_POSTER_BUCKET =
+  process.env.NEXT_PUBLIC_SUPABASE_MOVIE_PACKAGE_BUCKET?.trim() ?? "";
+
+function normalizePublicSupabaseUrl(rawUrl: string | undefined): string {
+  if (!rawUrl) {
+    return "";
+  }
+
+  return rawUrl.trim().replace(/\/+$/, "").replace(/\/rest\/v1$/i, "");
+}
+
+function buildMoviePackagePosterUrl(posterFile: string): string {
+  const normalizedFile = posterFile.includes(".") ? posterFile : `${posterFile}.png`;
+  const supabaseBaseUrl = normalizePublicSupabaseUrl(process.env.NEXT_PUBLIC_SUPABASE_URL);
+
+  if (!supabaseBaseUrl || !MOVIE_PACKAGE_POSTER_BUCKET) {
+    return `/posters/${normalizedFile}`;
+  }
+
+  return `${supabaseBaseUrl}/storage/v1/object/public/${MOVIE_PACKAGE_POSTER_BUCKET}/${normalizedFile}`;
+}
+
+export const moviePackageFilms: MoviePackageFilm[] = [
+  {
+    id: "goat",
+    title: "Goat",
+    tagline: "Dream Big. Play Bigger.",
+    genre: "Animation Comedy",
+    duration: 100,
+    rating: "PG",
+    year: 2026,
+    director: "Tyree Dillihay",
+    cast: ["Caleb McLaughlin", "Gabrielle Union", "Aaron Pierre", "Stephen Curry"],
+    synopsis: "A young goat pursues his dream of becoming a professional Roarball player.",
+    posterFile: "goat.png",
+    posterUrl: buildMoviePackagePosterUrl("goat.png"),
+    imdbRating: 7.5,
+
+  },
+  {
+    id: "jackryangh",
+    title: "Jack Ryan: Ghost War",
+    tagline: "The Mission Comes First.",
+    genre: "Action Thriller",
+    duration: 105,
+    rating: "R",
+    year: 2026,
+    director: "Andrew Brenstein",
+    cast: ["John Krasinski", "Wendell Pierce", "Michael Kelly", "Sienna Miller"],
+    synopsis:
+      "Follows Jack Ryan who reunites with CIA operatives to navigate a treacherous web of betrayal against an enemy who knows their every move, facing a past they thought was long put to rest.",
+    posterFile: "jackryangh.png",
+    posterUrl: buildMoviePackagePosterUrl("jackryangh.png"),
+    imdbRating: 7.5,
+  },
+  {
+    id: "themummyle",
+    title: "Lee Cronin's The Mummy",
+    tagline: "Some Things Are Meant To Stay Buried",
+    genre: "Action Horror",
+    duration: 134,
+    rating: "R",
+    year: 2026,
+    director: "Lee Cronin",
+    cast: ["Jack Reynor", "Laia Costa", "May Calamawy", "Natalie Grace"],
+    synopsis:
+      "The young daughter of a journalist disappears into the desert without a trace. Eight years later, the broken family is shocked when she is returned to them, as what should be a joyful reunion turns into a living nightmare.",
+    posterFile: "themummyle.png",
+    posterUrl: buildMoviePackagePosterUrl("themummyle.png"),
+    imdbRating: 7.5,  
+  },
+  {
+    id: "projecthm",
+    title: "Project Hail Mary",
+    tagline: "Believe in the Hail Mary.",
+    genre: "Sci-Fi Adventure",
+    duration: 156,
+    rating: "PG-13",
+    year: 2026,
+    director: "Phil Lord & Christopher Miller",
+    cast: ["Ryan Gosling", "Sandra Huller", "James Ortiz", "Lionel Boyce"],
+    synopsis: "An astronaut must save Earth from a cosmic threat.",
+    posterFile: "projecthm.png",
+    posterUrl: buildMoviePackagePosterUrl("projecthm.png"),
+    imdbRating: 8.5,
+  },
+  {
+    id: "beastda",
+    title: "Beast",
+    tagline: "Legends Are Made In The Cage.",
+    genre: "Action Drama",
+    duration: 114,
+    rating: "R",
+    year: 2026,
+    director: "Andrew Brenstein, Tyler Atkins",
+    cast: ["Russell Crowe", "Mojean Aria", "Daniel MacPherson", "Luke Hemsworth"],
+    synopsis:
+      "MMA legend Patton James, now a commercial fisherman, is pulled back into the cage when his brother is in danger. Reuniting with his old coach Sammy, he commits to one final fight in ONE Championship against its brutal champion Xavier Grau.",
+    posterFile: "beastda.png",
+    posterUrl: buildMoviePackagePosterUrl("beastda.png"),
+    imdbRating: 7.5,
+  },
+  {
+    id: "mortalkombat2",
+    title: "Mortal Kombat 2",
+    tagline: "The Tournament Begins.",
+    genre: "Action Fantasy",
+    duration: 115,
+    rating: "R",
+    year: 2026,
+    director: "Simon McQuoid",
+    cast: ["Karl Urban", "Lewis Tan", "Jessica McNamee", "Hiroyuki Sanada"],
+    synopsis: "Earthrealm enters the Mortal Kombat tournament.",
+    posterFile: "mortalkombat2.png",
+    posterUrl: buildMoviePackagePosterUrl("mortalkombat2.png"),
+    imdbRating: 7.0,
+  },
+  {
+    id: "furiosamadmx",
+    title: "Furiosa: Mad Max Saga",
+    tagline: "Her Odyssey Begins.",
+    genre: "Sci-Fi Adventure",
+    duration: 148,
+    rating: "R",
+    year: 2024,
+    director: "George Miller",
+    cast: ["Anya Taylor-Joy", "Chris Hemsworth", "Tom Burke", "Alyla Browne"],
+    synopsis: "Furiosa fights to return home in a brutal wasteland.",
+    posterFile: "furiosamadmx.png",
+    posterUrl: buildMoviePackagePosterUrl("furiosamadmx.png"),
+    imdbRating: 8.0,
+  },
+  {
+    id: "avatarwa",
+    title: "Avatar: Way of Water",
+    tagline: "Return to Pandora",
+    genre: "Sci-Fi Adventure",
+    duration: 193,
+    rating: "PG-13",
+    year: 2022,
+    director: "James Cameron",
+    cast: ["Sam Worthington", "Zoe Saldana", "Sigourney Weaver", "Stephen Lang"],
+    synopsis:
+      "Jake Sully lives with his newfound family formed on the extrasolar moon Pandora. Once a familiar threat returns to finish what was previously started, Jake must work with Neytiri and the army of the Na'vi race to protect their home.",
+    posterFile: "avatarwa.png",
+    posterUrl: buildMoviePackagePosterUrl("avatarwa.png"),
+    imdbRating: 8.0,
+  },
+  {
+    id: "michaelj",
+    title: "Michael",
+    tagline: "The King of Pop Lives On.",
+    genre: "Biography Drama",
+    duration: 127,
+    rating: "PG-13",
+    year: 2026,
+    director: "Antoine Fuqua",
+    cast: ["Jaafar Jackson", "Nia Long", "Miles Teller", "Colman Domingo"],
+    synopsis:
+      "The early life of musician Michael Jackson, from the discovery of his talent as the lead of the Jackson Five to the artist whose creative ambition fueled a pursuit to become the biggest entertainer in the world.",
+    posterFile: "michaelj.png",
+    posterUrl: buildMoviePackagePosterUrl("michaelj.png"),
+    imdbRating: 8.0,
+  },
+  {
+    id: "jurassicworldre",
+    title: "Jurassic World: Rebirth",
+    tagline: "A New Era Begins.",
+    genre: "Sci-Fi Adventure",
+    duration: 133,
+    rating: "PG-13",
+    year: 2025,
+    director: "Gareth Edwards",
+    cast: ["Scarlett Johansson", "Mahershala Ali", "Jonathan Bailey", "Rupert Friend"],
+    synopsis:
+      "Five years post-Jurassic World: Dominion (2022), an expedition braves isolated equatorial regions to extract DNA from three massive prehistoric creatures for a groundbreaking medical breakthrough.",
+    posterFile: "jurassicworldre.png",
+    posterUrl: buildMoviePackagePosterUrl("jurassicworldre.png"),
+    imdbRating: 7.5,
+  },
+  {
+    id: "kraventhehunt",
+    title: "Kraven the Hunter",
+    tagline: "Villains Aren't Born. They're Made.",
+    genre: "Action Superhero",
+    duration: 127,
+    rating: "R",
+    year: 2024,
+    director: "J.C. Chandor",
+    cast: ["Aaron Taylor-Johnson", "Ariana DeBose", "Fred Hechinger", "Russell Crowe"],
+    synopsis:
+      "Kraven's complex relationship with his ruthless father, Nikolai Kravinoff, starts him down a path of vengeance with brutal consequences, motivating him to become not only the greatest hunter in the world, but also one of its most feared.",
+    posterFile: "kraventhehunt.png",
+    posterUrl: buildMoviePackagePosterUrl("kraventhehunt.png"),
+    imdbRating: 6.5,
+  },
+  {
+    id: "gladiator2",
+    title: "Gladiator 2",
+    tagline: "What We Do in Life Echoes in Eternity.",
+    genre: "Action Historical Drama",
+    duration: 148,
+    rating: "R",
+    year: 2024,
+    director: "Ridley Scott",
+    cast: ["Paul Mescal", "Pedro Pascal", "Denzel Washington", "Connie Nielsen"],
+    synopsis:
+      "After his home is conquered by the tyrannical emperors who now lead Rome, Lucius is forced to enter the Colosseum and must look to his past to find strength to return the glory of Rome to its people.",
+    posterFile: "gladiator2.png",
+    posterUrl: buildMoviePackagePosterUrl("gladiator2.png"),
+    imdbRating: 8.0,
+  },
+  {
+    id: "frankeinstein",
+    title: "Frankenstein",
+    tagline: "A Monster's Tragic Creation.",
+    genre: "Horror Fantasy",
+    duration: 150,
+    rating: "R",
+    year: 2025,
+    director: "Guillermo del Toro",
+    cast: ["Oscar Isaac", "Jacob Elordi", "Mia Goth", "Christoph Waltz"],
+    synopsis:
+      "Dr. Victor Frankenstein, a brilliant but egotistical scientist, brings a creature to life in a monstrous experiment that ultimately leads to the undoing of both the creator and his tragic creation.",
+    posterFile: "frankeinstein.png",
+    posterUrl: buildMoviePackagePosterUrl("frankeinstein.png"),
+    imdbRating: 7.5,
+  },
+  {
+    id: "28yrslater",
+    title: "28 Years Later",
+    tagline: "Time Didn't Heal Anything.",
+    genre: "Horror Thriller",
+    duration: 115,
+    rating: "R",
+    year: 2025,
+    director: "Danny Boyle",
+    cast: ["Jodie Comer", "Aaron Taylor-Johnson", "Ralph Fiennes", "Alfie Williams"],
+    synopsis:
+      "A group of survivors of the rage virus live on a small island. When one of the group leaves the island on a mission into the mainland, he discovers secrets, wonders, and horrors that have mutated not only the infected but other survivors.",
+    posterFile: "28yrslater.png",
+    posterUrl: buildMoviePackagePosterUrl("28yrslater.png"),
+    imdbRating: 7.0,
+  },
+  {
+    id: "wakeupdead",
+    title: "Knives Out: Wake Up Dead Man",
+    tagline: "The Most Dangerous Case Yet.",
+    genre: "Crime Mystery",
+    duration: 144,
+    rating: "PG-13",
+    year: 2025,
+    director: "Rian Johnson",
+    cast: ["Daniel Craig", "Josh Brolin", "Glenn Close", "Mila Kunis"],
+    synopsis:
+      "Detective Benoit Blanc teams up with an earnest young priest to investigate a perfectly impossible crime at a small-town church with a dark history.",
+    posterFile: "wakeupdead.png",
+    posterUrl: buildMoviePackagePosterUrl("wakeupdead.png"),
+    imdbRating: 7.5,
+  },
+  {
+    id: "supermank",
+    title: "Superman",
+    tagline: "Look Up.",
+    genre: "Superhero Action",
+    duration: 129,
+    rating: "PG-13",
+    year: 2025,
+    director: "James Gunn",
+    cast: ["David Corenswet", "Rachel Brosnahan", "Nicholas Hoult", "Skyler Gisondo"],
+    synopsis:
+      "Superman must reconcile his alien Kryptonian heritage with his human upbringing as reporter Clark Kent. As the embodiment of truth, justice and the American way he soon finds himself in a world that views these as old-fashioned.",
+    posterFile: "supermank.png",
+    posterUrl: buildMoviePackagePosterUrl("supermank.png"),
+    imdbRating: 7.5,
+  },
+  {
+    id: "thunderboltsn",
+    title: "Thunderbolts",
+    tagline: "Everyone Deserves A Second Shot.",
+    genre: "Superhero Action",
+    duration: 126,
+    rating: "PG-13",
+    year: 2025,
+    director: "Jake Schreier",
+    cast: ["Florence Pugh", "Sebastian Stan", "Wyatt Russell", "David Harbour"],
+    synopsis:
+      "After finding themselves ensnared in a death trap, an unconventional team of antiheroes must go on a dangerous mission that will force them to confront the darkest corners of their pasts.",
+    posterFile: "thunderboltsn.png",
+    posterUrl: buildMoviePackagePosterUrl("thunderboltsn.png"),
+    imdbRating: 7.5,
+  },
+  {
+    id: "f1themovie",
+    title: "F1: The Movie",
+    tagline: "Racing Is Life.",
+    genre: "Sports Drama",
+    duration: 155,
+    rating: "PG-13",
+    year: 2025,
+    director: "Joseph Kosinski",
+    cast: ["Brad Pitt", "Damson Idris", "Kerry Condon", "Javier Bardem"],
+    synopsis: "A Formula One driver comes out of retirement to mentor and team up with a younger driver.",
+    posterFile: "f1themovie.png",
+    posterUrl: buildMoviePackagePosterUrl("f1themovie.png"),
+    imdbRating: 7.5,
+  },
+  {
+    id: "inthegrey",
+    title: "In the Grey",
+    tagline: "No Rules. No Mercy.",
+    genre: "Action Thriller",
+    duration: 123,
+    rating: "R",
+    year: 2026,
+    director: "Guy Ritchie",
+    cast: ["Henry Cavill", "Jake Gyllenhaal", "Eiza Gonzalez", "Rosamund Pike"],
+    synopsis:
+      "A covert team of elite operatives are living in the shadows. When a ruthless despot steals a billion-dollar fortune, they're sent to take it back-an impossible heist that erupts into a deadly game of strategy, deception and survival.",
+    posterFile: "inthegrey.png",
+    posterUrl: buildMoviePackagePosterUrl("inthegrey.png"),
+    imdbRating: 7.5,
+  },
+  {
+    id: "avatarfire",
+    title: "Avatar: Fire and Ash",
+    tagline: "When the Ashes Fall, Only the Strong will Rise",
+    genre: "Action Sci-Fi",
+    duration: 197,
+    rating: "PG-13",
+    year: 2025,
+    director: "James Cameron",
+    cast: ["Sam Worthington", "Zoe Saldana", "Sigourney Weaver", "Stephen Lang"],
+    synopsis:
+      "Jake and Neytiri's family grapples with grief, encountering a new, aggressive Na'vi tribe, the Ash People, who are led by the fiery Varang, as the conflict on Pandora escalates and a new moral focus emerges.",
+    posterFile: "avatarfire.png",
+    posterUrl: buildMoviePackagePosterUrl("avatarfire.png"),
+    imdbRating: 8.0,
   },
 ];
 
@@ -420,7 +781,7 @@ export const testimonials: Testimonial[] = [
   },
   {
     id: "testimonial-4",
-    name: "Jonathan & Priya Harrington",
+    name: "Jonathan & Priya Osawa",
     avatar: "/avatars/testimonial-4.jpg",
     role: "Private Members since March 2026",
     quote:
@@ -458,4 +819,12 @@ export function getUpcomingScreenings(): Screening[] {
 
 export function getFeaturedFilms(): Film[] {
   return films.slice(0, 4);
+}
+
+export function getMoviePackageFilmById(id: string): MoviePackageFilm | undefined {
+  return moviePackageFilms.find((film) => film.id === id);
+}
+
+export function getFeaturedMoviePackageFilms(): MoviePackageFilm[] {
+  return moviePackageFilms.slice(0, 6);
 }

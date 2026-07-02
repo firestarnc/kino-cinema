@@ -39,9 +39,9 @@ export default function Header() {
   return (
     <header
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
         scrolled
-          ? "bg-background/80 backdrop-blur-xl border-b border-border/30"
+          ? "bg-background/80 backdrop-blur-none md:backdrop-blur-xl border-b border-border/30"
           : "bg-transparent border-b border-transparent"
       )}
     >
@@ -91,7 +91,7 @@ export default function Header() {
               asChild
               className="velvet-glow font-outfit text-xs tracking-widest uppercase transition-all duration-300 hover:velvet-glow-strong"
             >
-              <Link href="/book/">
+              <Link href="/now-showing/">
                 <Ticket className="mr-1.5 h-4 w-4" />
                 Book Now
               </Link>
@@ -113,7 +113,8 @@ export default function Header() {
               </SheetTrigger>
               <SheetContent
                 side="right"
-                className="border-border/30 bg-background/95 backdrop-blur-xl"
+                className="border-border/30 bg-background/95 backdrop-blur-sm transition-transform duration-200 ease-out"
+                style={{ WebkitBackfaceVisibility: "hidden", backfaceVisibility: "hidden", willChange: "transform, opacity" }}
               >
                 <SheetHeader className="mb-8">
                   <SheetTitle className="text-left">
@@ -162,7 +163,7 @@ export default function Header() {
                     className="velvet-glow w-full font-outfit text-xs tracking-widest uppercase"
                     onClick={() => setMobileOpen(false)}
                   >
-                    <Link href="/book/">
+                    <Link href="/now-showing/">
                       <Ticket className="mr-1.5 h-4 w-4" />
                       Book Now
                     </Link>

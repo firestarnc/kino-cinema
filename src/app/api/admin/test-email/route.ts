@@ -12,11 +12,15 @@ export async function POST(request: NextRequest) {
   try {
     await sendBookingConfirmationEmail({
       id: "test-booking",
+      booking_type: "blockbuster",
       film_id: null,
       film_title: null,
+      content_platform: null,
+      content_title: null,
       package_id: "premium",
       package_name: "Premium Package",
       package_price_ngn: 350000,
+      additional_guests: 0,
       booking_date: new Date().toISOString().slice(0, 10),
       time_slot: "18:00-21:00",
       full_name: "Kino Guest",

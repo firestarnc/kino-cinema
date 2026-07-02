@@ -154,7 +154,7 @@ export default function MembershipPage() {
                     )}
                     size="lg"
                   >
-                    <Link href="/book/">
+                    <Link href="/now-showing/">
                       Join Now
                       <ChevronRight className="ml-1 h-4 w-4" />
                     </Link>

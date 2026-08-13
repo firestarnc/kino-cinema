@@ -1,8 +1,9 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { sendBookingConfirmationEmail } from "@/lib/booking-email";
+import { getPaystackSecretKey } from "@/lib/paystack-config";
 import {
-  getBookingByReference,
+  claimBookingConfirmationEmail,
   markBookingFailed,
   markBookingPaid,
 } from "@/lib/private-booking-db";
@@ -29,7 +30,7 @@ function isValidSignature(payload: string, signature: string, secret: string): b
 }
 
 export async function POST(request: NextRequest) {
-  const paystackSecretKey = process.env.PAYSTACK_SECRET_KEY;
+  const paystackSecretKey = getPaystackSecretKey();
   if (!paystackSecretKey) {
     return NextResponse.json({ error: "Missing Paystack secret key" }, { status: 500 });
   }
@@ -58,19 +59,33 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ received: true });
   }
 
-  const paidUpdateError = await markBookingPaid(reference);
+  const paidResult = await markBookingPaid(reference);
 
-  if (paidUpdateError?.code === "23505") {
+  if (paidResult.error?.code === "23505") {
     return NextResponse.json({ received: true, conflict: true });
   }
 
-  if (paidUpdateError) {
+  if (paidResult.error) {
     return NextResponse.json({ error: "Failed to finalize booking" }, { status: 500 });
   }
 
-  const booking = await getBookingByReference(reference);
-  if (booking?.status === "paid") {
-    void sendBookingConfirmationEmail(booking);
+  let bookingForEmail = await claimBookingConfirmationEmail(reference);
+
+  if (!bookingForEmail && paidResult.statusChanged) {
+    bookingForEmail = await claimBookingConfirmationEmail(reference, { allowLegacyFallback: true });
+  }
+
+  if (!bookingForEmail && paidResult.statusChanged && paidResult.booking) {
+    bookingForEmail = paidResult.booking;
+  }
+
+  if (bookingForEmail) {
+    void sendBookingConfirmationEmail(bookingForEmail).catch((error) => {
+      console.error("[booking] Failed to send booking confirmation from webhook route", {
+        reference,
+        error,
+      });
+    });
   }
 
   return NextResponse.json({ received: true });

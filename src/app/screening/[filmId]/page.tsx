@@ -5,6 +5,18 @@ import { getFilmById } from "@/lib/cinema-data";
 import { siteUrl } from "@/lib/site";
 import FilmDetailClient from "./FilmDetailClient";
 
+function toAbsoluteImageUrl(imageUrl: string): string {
+  if (/^https?:\/\//i.test(imageUrl)) {
+    return imageUrl;
+  }
+
+  if (imageUrl.startsWith("/")) {
+    return `${siteUrl}${imageUrl}`;
+  }
+
+  return `${siteUrl}/${imageUrl}`;
+}
+
 export function generateStaticParams() {
   return films.map((film) => ({ filmId: film.id }));
 }
@@ -77,7 +89,7 @@ async function FilmDetailPageContent({
     "@context": "https://schema.org",
     "@type": "Movie",
     name: film.title,
-    image: `${siteUrl}${film.posterUrl}`,
+    image: toAbsoluteImageUrl(film.posterUrl),
     description: film.synopsis,
     director: {
       "@type": "Person",

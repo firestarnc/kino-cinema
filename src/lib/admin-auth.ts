@@ -21,3 +21,8 @@ export function buildAdminSessionToken(): string | null {
 
   return btoa(`${ADMIN_USERNAME}:${ADMIN_PASSWORD}`);
 }
+
+export function isValidAdminSessionToken(sessionToken: string | null | undefined): boolean {
+  const expectedToken = buildAdminSessionToken();
+  return Boolean(sessionToken && expectedToken && sessionToken === expectedToken);
+}

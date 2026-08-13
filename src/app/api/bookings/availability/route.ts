@@ -1,12 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabaseAdminClient } from "@/lib/supabase-admin";
-import { isValidISOBookingDate, lagosTodayISODate } from "@/lib/private-booking";
+import { getBlockedSlotsForDate, getPaidSlotsForDate } from "@/lib/private-booking-db";
+import {
+  isElapsedTimeSlot,
+  isValidISOBookingDate,
+  lagosTodayISODate,
+  PRIVATE_TIME_SLOTS,
+} from "@/lib/private-booking";
+
+const AVAILABILITY_RESPONSE_CACHE_SECONDS = 15;
 
 function badRequest(message: string) {
   return NextResponse.json({ error: message }, { status: 400 });
 }
 
 export async function GET(request: NextRequest) {
+  const startedAt = Date.now();
   const date = request.nextUrl.searchParams.get("date")?.trim();
 
   if (!date || !isValidISOBookingDate(date)) {
@@ -18,19 +26,36 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const supabase = getSupabaseAdminClient();
-    const { data, error } = await supabase
-      .from("private_bookings")
-      .select("time_slot")
-      .eq("booking_date", date)
-      .eq("status", "paid");
+    const [takenSlots, blockedSlots] = await Promise.all([
+      getPaidSlotsForDate(date),
+      getBlockedSlotsForDate(date),
+    ]);
+    const elapsedSlots = PRIVATE_TIME_SLOTS
+      .filter((slot) => isElapsedTimeSlot(date, slot.id))
+      .map((slot) => slot.id);
+    const unavailableSlots = Array.from(
+      new Set([...takenSlots, ...blockedSlots, ...elapsedSlots])
+    );
 
-    if (error) {
-      return NextResponse.json({ error: "Failed to fetch slot availability" }, { status: 500 });
+    if (process.env.NODE_ENV !== "production") {
+      console.info("[availability] api response", {
+        date,
+        takenSlots: takenSlots.length,
+        blockedSlots: blockedSlots.length,
+        elapsedSlots: elapsedSlots.length,
+        unavailableSlots: unavailableSlots.length,
+        elapsedMs: Date.now() - startedAt,
+      });
     }
 
-    const takenSlots = (data ?? []).map((booking) => booking.time_slot);
-    return NextResponse.json({ takenSlots });
+    return NextResponse.json(
+      { takenSlots, blockedSlots, elapsedSlots, unavailableSlots },
+      {
+        headers: {
+          "Cache-Control": `public, max-age=0, s-maxage=${AVAILABILITY_RESPONSE_CACHE_SECONDS}, stale-while-revalidate=60`,
+        },
+      }
+    );
   } catch {
     return NextResponse.json({ error: "Unable to resolve slot availability" }, { status: 500 });
   }

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sendBookingConfirmationEmail } from "@/lib/booking-email";
+import { getPaystackSecretKey } from "@/lib/paystack-config";
 import {
+  claimBookingConfirmationEmail,
   getBookingByReference,
   markBookingFailed,
   markBookingPaid,
@@ -18,8 +20,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "reference is required" }, { status: 400 });
   }
 
-  const paystackSecretKey = process.env.PAYSTACK_SECRET_KEY;
+  const paystackSecretKey = getPaystackSecretKey();
   if (!paystackSecretKey) {
+    const existingBooking = await getBookingByReference(reference);
+    if (existingBooking?.status === "paid") {
+      return NextResponse.json({ success: true, fallback: true });
+    }
+
     return NextResponse.json({ error: "Missing Paystack secret key" }, { status: 500 });
   }
 
@@ -51,22 +58,47 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Payment was not successful" }, { status: 400 });
     }
 
-    const paidUpdateError = await markBookingPaid(reference);
+    const paidResult = await markBookingPaid(reference);
 
-    if (paidUpdateError) {
-      if (paidUpdateError.code === "23505") {
+    if (paidResult.error) {
+      if (paidResult.error.code === "23505") {
         return NextResponse.json({ error: "Slot has already been booked by another paid transaction" }, { status: 409 });
       }
       return NextResponse.json({ error: "Failed to finalize booking" }, { status: 500 });
     }
 
-    const booking = await getBookingByReference(reference);
-    if (booking?.status === "paid") {
-      void sendBookingConfirmationEmail(booking);
+    let bookingForEmail = await claimBookingConfirmationEmail(reference);
+
+    if (!bookingForEmail && paidResult.statusChanged) {
+      bookingForEmail = await claimBookingConfirmationEmail(reference, { allowLegacyFallback: true });
+    }
+
+    if (!bookingForEmail && paidResult.statusChanged && paidResult.booking) {
+      bookingForEmail = paidResult.booking;
+    }
+
+    if (bookingForEmail) {
+      void sendBookingConfirmationEmail(bookingForEmail).catch((error) => {
+        console.error("[booking] Failed to send booking confirmation from verify route", {
+          reference,
+          error,
+        });
+      });
     }
 
     return NextResponse.json({ success: true });
-  } catch {
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "";
+    if (/string did not match the expected pattern/i.test(message)) {
+      return NextResponse.json(
+        {
+          error:
+            "Paystack secret key format is invalid in server configuration. Update PAYSTACK_SECRET_KEY on production and retry.",
+        },
+        { status: 500 }
+      );
+    }
+
     return NextResponse.json({ error: "Unable to verify booking payment" }, { status: 500 });
   }
 }

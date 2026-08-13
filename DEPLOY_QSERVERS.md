@@ -14,12 +14,62 @@ This project is deployed by uploading a zip archive to `public_html`.
 2. Upload zip to QServers `public_html`.
 3. Extract zip in `public_html`.
 4. Ensure `.env` on server has production values.
-5. Run:
-   - `npm install`
-   - `npm run build`
-   - restart app process (PM2/Node manager)
-6. Confirm site and booking routes work.
-7. Apply/verify Apache cache + compression rules.
+5. Run automated deploy:
+   - `npm run deploy:qservers`
+6. If needed, run health check only:
+   - `npm run health:backend`
+7. If app does not boot, inspect PM2 logs:
+   - `pm2 logs kino-cinema --lines 120`
+8. Ensure Apache proxy target is still `http://127.0.0.1:3000/`.
+9. Confirm site and booking routes work.
+10. Apply/verify Apache cache + compression rules.
+
+## 60-second zero-miss deploy checklist
+
+Use this exact sequence after each zip upload to avoid Apache AH01114 backend errors.
+
+1. SSH into server and move to deploy folder:
+  - cd /home/YOUR_USER/public_html
+2. Confirm required files exist:
+  - ls -la package.json deploy.sh scripts/check-backend.sh
+3. Ensure deploy scripts are executable:
+  - chmod +x deploy.sh scripts/check-backend.sh
+4. Run automated deploy:
+  - npm run deploy:qservers
+5. Run backend health check:
+  - npm run health:backend
+6. Confirm backend listener is up:
+  - ss -tulpen | grep 3000
+7. Confirm local backend responds:
+  - curl -I http://127.0.0.1:3000/
+8. Confirm public domain responds:
+  - curl -I https://kinoscreens.com/
+
+Expected healthy state:
+- Port 3000 has a LISTEN process.
+- Local curl to 127.0.0.1:3000 returns HTTP headers.
+- Public domain no longer returns proxy connection errors.
+
+If anything fails, run in this order:
+1. pm2 status
+2. pm2 logs kino-cinema --lines 120
+3. tail -f /home/YOUR_USER/logs/error_log
+4. Re-run: npm run deploy:qservers
+
+One-time PM2 persistence setup (do this once):
+1. pm2 save
+2. pm2 startup
+3. Run the command printed by pm2 startup
+4. pm2 save
+
+## New deployment commands
+
+- `npm run deploy:qservers`
+  - Runs install + build.
+  - Starts or restarts PM2 process `kino-cinema`.
+  - Fails deployment if `http://127.0.0.1:3000/` is not reachable.
+- `npm run health:backend`
+  - Checks whether backend is reachable at `127.0.0.1:${PORT:-3000}`.
 
 ## Minimal server env checklist
 
@@ -38,6 +88,8 @@ Set these in server `.env` (or process manager env):
 Project-specific secrets (payment, db, email, admin):
 
 - `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_BLOCKBUSTER_BUCKET`
+- `NEXT_PUBLIC_SUPABASE_MOVIE_PACKAGE_BUCKET`
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY`
 - `PAYSTACK_SECRET_KEY`
@@ -97,3 +149,4 @@ Header checks:
 - `trailingSlash` is enabled in Next config.
 - Keep route links with trailing slash in production for Apache consistency.
 - After any `.env` change, restart process (and rebuild if needed).
+- Poster loading is Supabase-only. If `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_BLOCKBUSTER_BUCKET`, or `NEXT_PUBLIC_SUPABASE_MOVIE_PACKAGE_BUCKET` is missing, the app fails fast during startup.

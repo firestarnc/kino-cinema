@@ -33,7 +33,7 @@ export default function BookPage() {
         </div>
       </div>
 
-      <PrivateBookingPanel bookingType="blockbuster" />
+      <PrivateBookingPanel bookingType="blockbuster" skipTitleSelection />
     </div>
   );
 }

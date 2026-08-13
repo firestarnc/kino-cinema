@@ -1,11 +1,15 @@
 import { formatNaira } from "@/lib/private-booking";
-import { getRecentBookings } from "@/lib/private-booking-db";
+import { getActiveSlotBlocks, getRecentBookings } from "@/lib/private-booking-db";
 import AdminLogoutButton from "@/components/admin/AdminLogoutButton";
+import AdminBookingsManager from "@/components/admin/AdminBookingsManager";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminBookingsPage() {
-  const bookings = await getRecentBookings(120);
+  const [bookings, slotBlocks] = await Promise.all([
+    getRecentBookings(120),
+    getActiveSlotBlocks(120),
+  ]);
 
   return (
     <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
@@ -19,6 +23,8 @@ export default async function AdminBookingsPage() {
         </div>
       </div>
 
+      <AdminBookingsManager initialSlotBlocks={slotBlocks} />
+
       <div className="overflow-x-auto rounded-xl border border-border/40 bg-card/40 backdrop-blur-sm">
         <table className="min-w-full">
           <thead className="border-b border-border/40 bg-background/40">
@@ -30,13 +36,14 @@ export default async function AdminBookingsPage() {
               <th className="px-4 py-3 font-outfit text-xs uppercase tracking-wider text-muted-foreground">Package</th>
               <th className="px-4 py-3 font-outfit text-xs uppercase tracking-wider text-muted-foreground">Title</th>
               <th className="px-4 py-3 font-outfit text-xs uppercase tracking-wider text-muted-foreground">Status</th>
+              <th className="px-4 py-3 font-outfit text-xs uppercase tracking-wider text-muted-foreground">Source</th>
               <th className="px-4 py-3 font-outfit text-xs uppercase tracking-wider text-muted-foreground">Reference</th>
             </tr>
           </thead>
           <tbody>
             {bookings.length === 0 ? (
               <tr>
-                <td colSpan={8} className="px-4 py-10 text-center font-outfit text-sm text-muted-foreground">
+                <td colSpan={9} className="px-4 py-10 text-center font-outfit text-sm text-muted-foreground">
                   No bookings found yet.
                 </td>
               </tr>
@@ -69,13 +76,16 @@ export default async function AdminBookingsPage() {
                   </td>
                   <td className="px-4 py-3 font-outfit text-sm text-foreground/90">
                     {booking.booking_type === "movie-package"
-                      ? `${booking.content_title ?? "Selected in booking"}${booking.content_platform ? ` • ${booking.content_platform}` : ""}`
+                      ? `${booking.content_title ?? "To be selected in person"}${booking.content_platform ? ` • ${booking.content_platform}` : ""}`
                       : (booking.film_title ?? "Chosen in person")}
                   </td>
                   <td className="px-4 py-3 font-outfit text-sm">
                     <span className="rounded-full border border-cinema-gold/60 bg-cinema-gold/20 px-2 py-1 text-xs uppercase tracking-wider text-gold">
                       {booking.status}
                     </span>
+                  </td>
+                  <td className="px-4 py-3 font-outfit text-xs text-muted-foreground">
+                    {booking.payment_source === "admin_direct" ? "Admin Direct" : "Online Paystack"}
                   </td>
                   <td className="px-4 py-3 font-outfit text-xs text-muted-foreground">{booking.paystack_reference}</td>
                 </tr>

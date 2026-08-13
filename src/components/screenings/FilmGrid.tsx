@@ -12,7 +12,8 @@ export default function FilmGrid({ films }: FilmGridProps) {
   const showSkeleton = loadedCount < threshold;
 
   useEffect(() => {
-    setLoadedCount(0);
+    const t = setTimeout(() => setLoadedCount(0), 0);
+    return () => clearTimeout(t);
   }, [films]);
 
   const handleImageLoad = () => setLoadedCount((c) => c + 1);

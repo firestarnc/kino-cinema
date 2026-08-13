@@ -135,6 +135,41 @@ export const MOVIE_PACKAGE_MENU_NOTE =
 
 export const LAGOS_TIMEZONE = "Africa/Lagos";
 
+type LagosDateTimeParts = {
+  dateISO: string;
+  hour: number;
+  minute: number;
+};
+
+function getLagosDateTimeParts(at: Date = new Date()): LagosDateTimeParts {
+  const formatter = new Intl.DateTimeFormat("en-CA", {
+    timeZone: LAGOS_TIMEZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  });
+
+  const parts = formatter.formatToParts(at);
+  const year = parts.find((part) => part.type === "year")?.value;
+  const month = parts.find((part) => part.type === "month")?.value;
+  const day = parts.find((part) => part.type === "day")?.value;
+  const hour = parts.find((part) => part.type === "hour")?.value;
+  const minute = parts.find((part) => part.type === "minute")?.value;
+
+  if (!year || !month || !day || !hour || !minute) {
+    throw new Error("Could not resolve Africa/Lagos date and time parts");
+  }
+
+  return {
+    dateISO: `${year}-${month}-${day}`,
+    hour: Number(hour),
+    minute: Number(minute),
+  };
+}
+
 export function getPackagesForBookingType(bookingType: BookingType): PrivatePackage[] {
   return bookingType === "movie-package" ? MOVIE_PACKAGES : BLOCKBUSTER_PACKAGES;
 }
@@ -184,12 +219,7 @@ export function formatNaira(amount: number): string {
 }
 
 export function lagosTodayISODate(): string {
-  // Africa/Lagos is UTC+1 year-round (no DST), so this avoids locale-specific formatting quirks.
-  const lagosNow = new Date(Date.now() + 60 * 60 * 1000);
-  const year = String(lagosNow.getUTCFullYear());
-  const month = String(lagosNow.getUTCMonth() + 1).padStart(2, "0");
-  const day = String(lagosNow.getUTCDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
+  return getLagosDateTimeParts().dateISO;
 }
 
 export function isValidISOBookingDate(dateISO: string): boolean {
@@ -217,4 +247,42 @@ export function isValidISOBookingDate(dateISO: string): boolean {
 
 export function isPastBookingDate(dateISO: string): boolean {
   return dateISO < lagosTodayISODate();
+}
+
+export function isElapsedTimeSlot(dateISO: string, slotId: TimeSlotId, at: Date = new Date()): boolean {
+  if (!isValidISOBookingDate(dateISO)) {
+    return false;
+  }
+
+  const lagosNow = getLagosDateTimeParts(at);
+
+  if (dateISO < lagosNow.dateISO) {
+    return true;
+  }
+
+  if (dateISO > lagosNow.dateISO) {
+    return false;
+  }
+
+  const [slotStart] = slotId.split("-");
+  const [hourText, minuteText] = slotStart.split(":");
+  const slotHour = Number(hourText);
+  const slotMinute = Number(minuteText);
+
+  if (
+    !Number.isInteger(slotHour) ||
+    !Number.isInteger(slotMinute) ||
+    slotHour < 0 ||
+    slotHour > 23 ||
+    slotMinute < 0 ||
+    slotMinute > 59
+  ) {
+    return false;
+  }
+
+  const currentMinutes = lagosNow.hour * 60 + lagosNow.minute;
+  const slotStartMinutes = slotHour * 60 + slotMinute;
+
+  // Policy: same-day slots become unavailable at slot start time.
+  return currentMinutes >= slotStartMinutes;
 }

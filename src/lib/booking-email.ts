@@ -2,7 +2,7 @@ import type { Database } from "@/lib/database.types";
 import { renderKinoEmailLayout } from "@/lib/email-layout";
 import nodemailer from "nodemailer";
 
-type PrivateBookingRow = Database["public"]["Tables"]["private_bookings"]["Row"];
+export type PrivateBookingRow = Database["public"]["Tables"]["private_bookings"]["Row"];
 
 function getSmtpPort(): number {
   const rawPort = process.env.QSERVERS_SMTP_PORT ?? "587";
@@ -22,12 +22,19 @@ export async function sendBookingConfirmationEmail(booking: PrivateBookingRow): 
   const fromEmail = process.env.BOOKING_FROM_EMAIL;
 
   if (!smtpHost || !smtpUser || !smtpPassword || !fromEmail) {
+    console.error("[email] Missing SMTP configuration for booking confirmation", {
+      hasHost: Boolean(smtpHost),
+      hasUser: Boolean(smtpUser),
+      hasPassword: Boolean(smtpPassword),
+      hasFrom: Boolean(fromEmail),
+      reference: booking.paystack_reference,
+    });
     return;
   }
 
   const bookingLabel = `${booking.booking_date} • ${booking.time_slot}`;
   const movieValue = booking.booking_type === "movie-package"
-    ? `${booking.content_title ?? "Selected in booking"}${booking.content_platform ? ` • ${booking.content_platform}` : ""}`
+    ? `${booking.content_title ?? "To be selected in person"}${booking.content_platform ? ` • ${booking.content_platform}` : ""}`
     : booking.film_title ?? "To be selected in person at the cinema";
   const movieLine = `${booking.booking_type === "movie-package" ? "Title" : "Movie"}: ${movieValue}`;
   const amountPaid = `₦${booking.package_price_ngn.toLocaleString()}`;
@@ -70,50 +77,65 @@ export async function sendBookingConfirmationEmail(booking: PrivateBookingRow): 
     "Contact: contact@kinoscreens.com",
   ].join("\n");
 
-  const transporter = nodemailer.createTransport({
-    host: smtpHost,
-    port: getSmtpPort(),
-    secure: Number(process.env.QSERVERS_SMTP_PORT ?? "587") === 465,
-    auth: {
-      user: smtpUser,
-      pass: smtpPassword,
-    },
-  });
+  try {
+    const smtpPort = getSmtpPort();
+    const transporter = nodemailer.createTransport({
+      host: smtpHost,
+      port: smtpPort,
+      secure: smtpPort === 465,
+      auth: {
+        user: smtpUser,
+        pass: smtpPassword,
+      },
+    });
 
-  await transporter.sendMail({
-    from: fromEmail,
-    to: booking.email,
-    subject: "Kino Screens booking confirmation",
-    text,
-    html,
-  });
+    await transporter.sendMail({
+      from: fromEmail,
+      to: booking.email,
+      subject: "Kino Screens booking confirmation",
+      text,
+      html,
+    });
+  } catch (error) {
+    console.error("[email] Failed to send booking confirmation", {
+      reference: booking.paystack_reference,
+      recipient: booking.email,
+      error,
+    });
+    throw error;
+  }
 }
 
-export async function sendAdminNotification(booking: PrivateBookingRow, event: "created" | "paid"): Promise<void> {
+export async function sendAdminNotification(booking: PrivateBookingRow): Promise<void> {
   const smtpHost = process.env.QSERVERS_SMTP_HOST;
   const smtpUser = process.env.QSERVERS_SMTP_USER;
   const smtpPassword = process.env.QSERVERS_SMTP_PASSWORD;
   const fromEmail = process.env.BOOKING_FROM_EMAIL;
 
   if (!smtpHost || !smtpUser || !smtpPassword || !fromEmail) {
+    console.error("[email] Missing SMTP configuration for admin notification", {
+      hasHost: Boolean(smtpHost),
+      hasUser: Boolean(smtpUser),
+      hasPassword: Boolean(smtpPassword),
+      hasFrom: Boolean(fromEmail),
+      reference: booking.paystack_reference,
+    });
     return;
   }
 
-  const rawRecipients = process.env.ADMIN_NOTIFICATION_EMAILS ?? "kinoscreens@gmail.com";
+  const rawRecipients = process.env.ADMIN_NOTIFICATION_EMAILS ?? "courageamayo1@gmail.com";
   const recipients = rawRecipients.split(",").map((s) => s.trim()).filter(Boolean);
   if (!recipients.length) return;
 
   const bookingLabel = `${booking.booking_date} • ${booking.time_slot}`;
   const amountPaid = `₦${booking.package_price_ngn.toLocaleString()}`;
 
-  const subject = event === "created"
-    ? `New Kino booking: ${booking.paystack_reference} (pending)`
-    : `Booking paid: ${booking.paystack_reference}`;
+  const subject = `Booking paid: ${booking.paystack_reference}`;
 
   const html = renderKinoEmailLayout({
-    eyebrow: event === "created" ? "New Booking" : "Booking Paid",
-    title: `Booking ${event === "created" ? "Created" : "Paid"}`,
-    intro: `A booking has been ${event === "created" ? "created (pending payment)" : "marked paid"}.`,
+    eyebrow: "Booking Paid",
+    title: "Booking Paid",
+    intro: "A booking has been marked paid.",
     detailsTitle: "Booking Details",
     details: [
       { label: "Full name", value: booking.full_name },
@@ -131,7 +153,7 @@ export async function sendAdminNotification(booking: PrivateBookingRow, event: "
   });
 
   const text = [
-    `${event === "created" ? "New booking created" : "Booking paid"}`,
+    "Booking paid",
     `Name: ${booking.full_name}`,
     `Email: ${booking.email}`,
     `Phone: ${booking.phone_number ?? "-"}`,
@@ -142,21 +164,31 @@ export async function sendAdminNotification(booking: PrivateBookingRow, event: "
     `Notes: ${booking.notes ?? "-"}`,
   ].join("\n");
 
-  const transporter = nodemailer.createTransport({
-    host: smtpHost,
-    port: getSmtpPort(),
-    secure: Number(process.env.QSERVERS_SMTP_PORT ?? "587") === 465,
-    auth: {
-      user: smtpUser,
-      pass: smtpPassword,
-    },
-  });
+  try {
+    const smtpPort = getSmtpPort();
+    const transporter = nodemailer.createTransport({
+      host: smtpHost,
+      port: smtpPort,
+      secure: smtpPort === 465,
+      auth: {
+        user: smtpUser,
+        pass: smtpPassword,
+      },
+    });
 
-  await transporter.sendMail({
-    from: fromEmail,
-    to: recipients.join(","),
-    subject,
-    text,
-    html,
-  });
+    await transporter.sendMail({
+      from: fromEmail,
+      to: recipients.join(","),
+      subject,
+      text,
+      html,
+    });
+  } catch (error) {
+    console.error("[email] Failed to send admin notification", {
+      reference: booking.paystack_reference,
+      recipients,
+      error,
+    });
+    throw error;
+  }
 }

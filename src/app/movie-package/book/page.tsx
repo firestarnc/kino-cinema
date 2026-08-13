@@ -30,7 +30,12 @@ export default function MoviePackageBookPage() {
         </div>
       </div>
 
-      <PrivateBookingPanel bookingType="movie-package" skipTitleSelection />
+      <PrivateBookingPanel
+        bookingType="movie-package"
+        skipTitleSelection
+        successPath="/movie-package/book/success"
+        failedPath="/movie-package/book/failed"
+      />
     </div>
   );
 }

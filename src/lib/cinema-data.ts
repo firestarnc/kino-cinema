@@ -77,6 +77,51 @@ export interface Testimonial {
 // Film Data
 // -----------------------------------------------------------------------------
 
+const BLOCKBUSTER_POSTER_BUCKET =
+  process.env.NEXT_PUBLIC_SUPABASE_BLOCKBUSTER_BUCKET?.trim() ?? "";
+
+const MOVIE_PACKAGE_POSTER_BUCKET =
+  process.env.NEXT_PUBLIC_SUPABASE_MOVIE_PACKAGE_BUCKET?.trim() ?? "";
+
+const SUPABASE_PUBLIC_URL = normalizePublicSupabaseUrl(process.env.NEXT_PUBLIC_SUPABASE_URL);
+
+function requirePosterEnv(name: string, value: string): string {
+  if (!value) {
+    throw new Error(
+      `Missing required environment variable ${name}. Poster assets are configured for Supabase storage only.`
+    );
+  }
+
+  return value;
+}
+
+const POSTER_STORAGE_CONFIG = {
+  supabaseBaseUrl: requirePosterEnv("NEXT_PUBLIC_SUPABASE_URL", SUPABASE_PUBLIC_URL),
+  blockbusterBucket: requirePosterEnv("NEXT_PUBLIC_SUPABASE_BLOCKBUSTER_BUCKET", BLOCKBUSTER_POSTER_BUCKET),
+  moviePackageBucket: requirePosterEnv("NEXT_PUBLIC_SUPABASE_MOVIE_PACKAGE_BUCKET", MOVIE_PACKAGE_POSTER_BUCKET),
+};
+
+function normalizePublicSupabaseUrl(rawUrl: string | undefined): string {
+  if (!rawUrl) {
+    return "";
+  }
+
+  return rawUrl.trim().replace(/\/+$/, "").replace(/\/rest\/v1$/i, "");
+}
+
+function buildPublicPosterUrl(posterFile: string, bucketName: string): string {
+  return `${POSTER_STORAGE_CONFIG.supabaseBaseUrl}/storage/v1/object/public/${bucketName}/${posterFile}`;
+}
+
+function buildBlockbusterPosterUrl(posterFile: string): string {
+  return buildPublicPosterUrl(posterFile, POSTER_STORAGE_CONFIG.blockbusterBucket);
+}
+
+function buildMoviePackagePosterUrl(posterFile: string): string {
+  const normalizedFile = posterFile.includes(".") ? posterFile : `${posterFile}.png`;
+  return buildPublicPosterUrl(normalizedFile, POSTER_STORAGE_CONFIG.moviePackageBucket);
+}
+
 export const films: Film[] = [
   {
     id: "film-1",
@@ -90,7 +135,7 @@ export const films: Film[] = [
     cast: ["Sam Dede", "Bucci Franklin", "Charles Inojie", "Jimmy Jean-Louis"],
     synopsis:
       "An ex-marine who returns home to Nigeria after 25 years away, only for his homecoming to take a dangerous turn when he is kidnapped by rival militants along the creeks. As a frantic rescue mission is launched, he must fight for survival while navigating a volatile landscape of corporate exploitation, political corruption, and internal fractures within the local resistance movement.",
-    posterUrl: "/posters/film-1.jpg",
+    posterUrl: buildBlockbusterPosterUrl("film-1.jpg"),
     backdropUrl: "/backdrops/film-1.jpg",
     trailerUrl: "",
     imdbRating: 8.5,
@@ -107,7 +152,7 @@ export const films: Film[] = [
     cast: ["Sophie Alakija", "Chris Okagbue", "Abayomi Alvin", "Sika Osei"],
     synopsis:
       "A radiant, spiritual mentor, and accomplished architect who enjoys a seemingly idyllic life with her husband. Their marriage stands as a testament to love and faith, but their world fractures when her husband is suddenly accused of infidelity and a heinous murder.",
-    posterUrl: "/posters/film-2.jpeg",
+    posterUrl: buildBlockbusterPosterUrl("film-2.jpeg"),
     backdropUrl: "/backdrops/film-2.jpeg",
     trailerUrl: "",
     imdbRating: 8.0,
@@ -124,7 +169,7 @@ export const films: Film[] = [
     cast: ["Tope Olowoniyan", "Blossom Chukwujekwu", "Daniel Etim Effiong", "Gideon Okeke"],
     synopsis:
       "A young influencer who manages to find love and stability with an electrical engineer after previously losing her adoptive parents and her family fortune.",
-    posterUrl: "/posters/film-3.jpeg",
+    posterUrl: buildBlockbusterPosterUrl("film-3.jpeg"),
     backdropUrl: "/backdrops/film-3.jpeg",
     trailerUrl: "",
     imdbRating: 7.0,
@@ -141,7 +186,7 @@ export const films: Film[] = [
     cast: ["Uzoamaka Power", "Andrew Yaw Bunting ", "Zubby Michael", "Beverly Osu"],
     synopsis:
       "A professional call center agent and hopeless romantic who accidentally answers a call from a charming stranger living abroad. Their brief phone interaction sparks an instant connection, leading them into a whirlwind virtual romance despite never having met in person. As she navigates the complexities of falling in love through a phone screen, the unexpected return of her ex-boyfriend forces her to choose between the comfortable familiarity of her past and the exciting possibility of her digital future.",
-    posterUrl: "/posters/film-4.jpeg",
+    posterUrl: buildBlockbusterPosterUrl("film-4.jpeg"),
     backdropUrl: "/backdrops/film-4.jpeg",
     trailerUrl: "",
     imdbRating: 8.0,
@@ -158,7 +203,7 @@ export const films: Film[] = [
     cast: ["Allison Precious Emmanuel", "Chuks Joseph", "Hart Andrew ", "Abbey Delight Dagogo"],
     synopsis:
       "The heartbreaking journey of a teenage firstborn in a small Niger Delta community who is suddenly thrust into the role of a parent after the tragic deaths of his mother and father",
-    posterUrl: "/posters/film-5.jpeg",
+    posterUrl: buildBlockbusterPosterUrl("film-5.jpeg"),
     backdropUrl: "/backdrops/film-5.jpeg",
     trailerUrl: "",
     imdbRating: 8.5,
@@ -166,30 +211,36 @@ export const films: Film[] = [
 ];
 
 // -----------------------------------------------------------------------------
-// Movie Package Data
+// Helpers: map MoviePackageFilm -> Film
 // -----------------------------------------------------------------------------
 
-const MOVIE_PACKAGE_POSTER_BUCKET =
-  process.env.NEXT_PUBLIC_SUPABASE_MOVIE_PACKAGE_BUCKET?.trim() ?? "";
-
-function normalizePublicSupabaseUrl(rawUrl: string | undefined): string {
-  if (!rawUrl) {
-    return "";
-  }
-
-  return rawUrl.trim().replace(/\/+$/, "").replace(/\/rest\/v1$/i, "");
+export function moviePackageFilmToFilm(mp: MoviePackageFilm): Film {
+  return {
+    id: mp.id,
+    title: mp.title,
+    tagline: mp.tagline,
+    genre: mp.genre,
+    duration: mp.duration,
+    rating: mp.rating,
+    year: mp.year,
+    director: mp.director,
+    cast: mp.cast,
+    synopsis: mp.synopsis,
+    posterUrl: mp.posterUrl ?? "",
+    backdropUrl: mp.posterUrl ?? "",
+    trailerUrl: "",
+    imdbRating: mp.imdbRating ?? 0,
+  };
 }
 
-function buildMoviePackagePosterUrl(posterFile: string): string {
-  const normalizedFile = posterFile.includes(".") ? posterFile : `${posterFile}.png`;
-  const supabaseBaseUrl = normalizePublicSupabaseUrl(process.env.NEXT_PUBLIC_SUPABASE_URL);
-
-  if (!supabaseBaseUrl || !MOVIE_PACKAGE_POSTER_BUCKET) {
-    return `/posters/${normalizedFile}`;
-  }
-
-  return `${supabaseBaseUrl}/storage/v1/object/public/${MOVIE_PACKAGE_POSTER_BUCKET}/${normalizedFile}`;
+export function getMoviePackageFilmAsFilmById(id: string): Film | undefined {
+  const mp = moviePackageFilms.find((m) => m.id === id);
+  return mp ? moviePackageFilmToFilm(mp) : undefined;
 }
+
+// -----------------------------------------------------------------------------
+// Movie Package Data
+// -----------------------------------------------------------------------------
 
 export const moviePackageFilms: MoviePackageFilm[] = [
   {

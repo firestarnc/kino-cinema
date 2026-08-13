@@ -33,6 +33,8 @@ export default function FilmCard({ film, index = 0, onImageLoad }: FilmCardProps
     "from-primary/40 via-primary/20 to-background";
   const screeningPath = `/screening/${film.id}/`;
   const [isImageLoaded, setIsImageLoaded] = useState(false);
+  const shouldBypassImageOptimization =
+    film.posterUrl.includes("supabase.co/storage/v1/object/public/");
 
   return (
     <div
@@ -53,6 +55,7 @@ export default function FilmCard({ film, index = 0, onImageLoad }: FilmCardProps
             src={film.posterUrl}
             alt={film.title}
             fill
+            unoptimized={shouldBypassImageOptimization}
             className={cn("object-cover p-2 transition-transform duration-700 group-hover:scale-105", isImageLoaded ? "opacity-100" : "opacity-0")}
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             priority={index === 0}

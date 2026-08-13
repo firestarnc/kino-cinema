@@ -20,8 +20,11 @@ export interface Database {
           phone_number: string;
           notes: string | null;
           status: "pending_payment" | "paid" | "failed" | "cancelled";
+          payment_source: "online_paystack" | "admin_direct";
+          created_by_admin: string | null;
           paystack_reference: string;
           paid_at: string | null;
+          confirmation_email_sent_at: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -43,8 +46,11 @@ export interface Database {
           phone_number: string;
           notes?: string | null;
           status?: "pending_payment" | "paid" | "failed" | "cancelled";
+          payment_source?: "online_paystack" | "admin_direct";
+          created_by_admin?: string | null;
           paystack_reference: string;
           paid_at?: string | null;
+          confirmation_email_sent_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -66,10 +72,40 @@ export interface Database {
           phone_number?: string;
           notes?: string | null;
           status?: "pending_payment" | "paid" | "failed" | "cancelled";
+          payment_source?: "online_paystack" | "admin_direct";
+          created_by_admin?: string | null;
           paystack_reference?: string;
           paid_at?: string | null;
+          confirmation_email_sent_at?: string | null;
           created_at?: string;
           updated_at?: string;
+        };
+        Relationships: [];
+      };
+      manual_slot_blocks: {
+        Row: {
+          id: string;
+          booking_date: string;
+          time_slot: string;
+          reason: string | null;
+          created_by_admin: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          booking_date: string;
+          time_slot: string;
+          reason?: string | null;
+          created_by_admin?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          booking_date?: string;
+          time_slot?: string;
+          reason?: string | null;
+          created_by_admin?: string | null;
+          created_at?: string;
         };
         Relationships: [];
       };

@@ -67,7 +67,7 @@ const localBusinessSchema = {
   "@context": "https://schema.org",
   "@type": "MovieTheater",
   name: businessDetails.name,
-  image: `${siteUrl}/posters/film-1.jpg`,
+  image: `${siteUrl}/opengraph-image.jpg`,
   url: siteUrl,
   ...(businessDetails.phone ? { telephone: businessDetails.phone } : {}),
   address: {

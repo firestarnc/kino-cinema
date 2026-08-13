@@ -29,6 +29,8 @@ function getBackdropGradient(genre: string): string {
 
 export default function FilmHero({ film }: FilmHeroProps) {
   const gradient = getBackdropGradient(film.genre);
+  const shouldBypassImageOptimization =
+    film.posterUrl.includes("supabase.co/storage/v1/object/public/");
 
   return (
     <section className="relative overflow-hidden">
@@ -46,6 +48,7 @@ export default function FilmHero({ film }: FilmHeroProps) {
                 src={film.posterUrl}
                 alt={film.title}
                 fill
+                unoptimized={shouldBypassImageOptimization}
                 className="object-cover transition-transform duration-700 hover:scale-105"
                 sizes="(max-width: 1024px) 260px, 240px"
               />

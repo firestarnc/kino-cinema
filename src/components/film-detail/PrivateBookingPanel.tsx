@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +12,7 @@ import {
   getMoviePackageTitleById,
   getMoviePackageTotal,
   getPackagesForBookingType,
+  isElapsedTimeSlot,
   isMoviePackageEligibleForExtraGuests,
   isPastBookingDate,
   isValidISOBookingDate,
@@ -61,6 +62,15 @@ interface BookingDetails {
   notes: string;
 }
 
+type AvailabilityCacheEntry = {
+  takenSlots: string[];
+  blockedSlots: string[];
+  elapsedSlots: string[];
+  fetchedAt: number;
+};
+
+const AVAILABILITY_CACHE_TTL_MS = 30_000;
+
 export default function PrivateBookingPanel({
   filmId,
   filmTitle,
@@ -77,6 +87,9 @@ export default function PrivateBookingPanel({
   const [visibleMovieCount, setVisibleMovieCount] = useState(6);
   const [additionalGuests, setAdditionalGuests] = useState(0);
   const [takenSlots, setTakenSlots] = useState<Set<string>>(new Set());
+  const [blockedSlots, setBlockedSlots] = useState<Set<string>>(new Set());
+  const [elapsedSlots, setElapsedSlots] = useState<Set<string>>(new Set());
+  const [clockTickMs, setClockTickMs] = useState(() => Date.now());
   const [details, setDetails] = useState<BookingDetails>({
     fullName: "",
     email: "",
@@ -86,6 +99,8 @@ export default function PrivateBookingPanel({
   const [isLoadingAvailability, setIsLoadingAvailability] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isPaystackReady, setIsPaystackReady] = useState(false);
+  const availabilityCacheRef = useRef<Map<string, AvailabilityCacheEntry>>(new Map());
+  const selectedSlotRef = useRef<TimeSlotId | null>(null);
 
   const availablePackages = useMemo(() => getPackagesForBookingType(bookingType), [bookingType]);
 
@@ -127,6 +142,10 @@ export default function PrivateBookingPanel({
   }, [additionalGuests, bookingType, selectedPackage]);
 
   useEffect(() => {
+    selectedSlotRef.current = selectedSlot;
+  }, [selectedSlot]);
+
+  useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://js.paystack.co/v1/inline.js";
     script.async = true;
@@ -153,6 +172,10 @@ export default function PrivateBookingPanel({
       return;
     }
 
+    if (skipTitleSelection) {
+      return;
+    }
+
     if (filmId) {
       const titleForFilm = getMoviePackageTitleByFilmId(filmId);
       if (titleForFilm && selectedContentTitleId !== titleForFilm.id) {
@@ -166,7 +189,17 @@ export default function PrivateBookingPanel({
     }
 
     setSelectedContentTitleId(MOVIE_PACKAGE_TITLES[0].id);
-  }, [bookingType, filmId, selectedContentTitleId]);
+  }, [bookingType, filmId, selectedContentTitleId, skipTitleSelection]);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setClockTickMs(Date.now());
+    }, 30_000);
+
+    return () => {
+      window.clearInterval(timer);
+    };
+  }, []);
 
   useEffect(() => {
     if (!selectedDate) {
@@ -175,38 +208,83 @@ export default function PrivateBookingPanel({
 
     if (!isValidISOBookingDate(selectedDate) || isPastBookingDate(selectedDate)) {
       setTakenSlots(new Set());
+      setBlockedSlots(new Set());
+      setElapsedSlots(new Set());
       setSelectedSlot(null);
       return;
+    }
+
+    const cacheKey = selectedDate;
+    const now = Date.now();
+    const cachedAvailability = availabilityCacheRef.current.get(cacheKey);
+
+    if (cachedAvailability && now - cachedAvailability.fetchedAt <= AVAILABILITY_CACHE_TTL_MS) {
+      setTakenSlots(new Set(cachedAvailability.takenSlots));
+      setBlockedSlots(new Set(cachedAvailability.blockedSlots));
+      setElapsedSlots(new Set(cachedAvailability.elapsedSlots));
     }
 
     let isCancelled = false;
 
     async function loadAvailability() {
       setIsLoadingAvailability(true);
-      setSelectedSlot(null);
+      const startedAt = performance.now();
 
       try {
         const query = new URLSearchParams({ date: selectedDate });
-        if (filmId) {
-          query.set("filmId", filmId);
-        }
 
         const response = await fetch(`/api/bookings/availability?${query.toString()}`, {
-          cache: "no-store",
+          cache: "default",
         });
 
         if (!response.ok) {
           throw new Error("Failed to load availability");
         }
 
-        const body = (await response.json()) as { takenSlots?: string[] };
+        const body = (await response.json()) as {
+          takenSlots?: string[];
+          blockedSlots?: string[];
+          elapsedSlots?: string[];
+          unavailableSlots?: string[];
+        };
         if (!isCancelled) {
-          setTakenSlots(new Set(body.takenSlots ?? []));
+          const nextPaidSlots = body.takenSlots ?? [];
+          const nextBlockedSlots = body.blockedSlots ?? [];
+          const nextElapsedSlots = body.elapsedSlots ?? [];
+          const nextUnavailableSlots = body.unavailableSlots ?? Array.from(
+            new Set([...nextPaidSlots, ...nextBlockedSlots, ...nextElapsedSlots])
+          );
+
+          availabilityCacheRef.current.set(cacheKey, {
+            takenSlots: nextPaidSlots,
+            blockedSlots: nextBlockedSlots,
+            elapsedSlots: nextElapsedSlots,
+            fetchedAt: Date.now(),
+          });
+
+          setTakenSlots(new Set(nextPaidSlots));
+          setBlockedSlots(new Set(nextBlockedSlots));
+          setElapsedSlots(new Set(nextElapsedSlots));
+
+          if (selectedSlotRef.current && nextUnavailableSlots.includes(selectedSlotRef.current)) {
+            setSelectedSlot(null);
+          }
+
+          if (process.env.NODE_ENV !== "production") {
+            const elapsedMs = Math.round(performance.now() - startedAt);
+            console.info("[availability] client refresh", {
+              date: selectedDate,
+              elapsedMs,
+              source: cachedAvailability ? "cache+network" : "network",
+            });
+          }
         }
       } catch {
         if (!isCancelled) {
           toast.error("Could not refresh slot availability.");
           setTakenSlots(new Set());
+          setBlockedSlots(new Set());
+          setElapsedSlots(new Set());
         }
       } finally {
         if (!isCancelled) {
@@ -220,7 +298,40 @@ export default function PrivateBookingPanel({
     return () => {
       isCancelled = true;
     };
-  }, [filmId, selectedDate]);
+  }, [selectedDate]);
+
+  const runtimeElapsedSlots = useMemo(() => {
+    if (!isValidISOBookingDate(selectedDate) || isPastBookingDate(selectedDate)) {
+      return new Set<string>();
+    }
+
+    const now = new Date(clockTickMs);
+    return new Set(
+      PRIVATE_TIME_SLOTS.filter((slot) => isElapsedTimeSlot(selectedDate, slot.id, now)).map(
+        (slot) => slot.id
+      )
+    );
+  }, [clockTickMs, selectedDate]);
+
+  const resolvedElapsedSlots = useMemo(
+    () => new Set([...elapsedSlots, ...runtimeElapsedSlots]),
+    [elapsedSlots, runtimeElapsedSlots]
+  );
+
+  const visibleTimeSlots = useMemo(
+    () => PRIVATE_TIME_SLOTS.filter((slot) => !resolvedElapsedSlots.has(slot.id)),
+    [resolvedElapsedSlots]
+  );
+
+  useEffect(() => {
+    if (!selectedSlot) {
+      return;
+    }
+
+    if (resolvedElapsedSlots.has(selectedSlot)) {
+      setSelectedSlot(null);
+    }
+  }, [resolvedElapsedSlots, selectedSlot]);
 
   function updateDetails(field: keyof BookingDetails, value: string) {
     setDetails((prev) => ({
@@ -237,8 +348,12 @@ export default function PrivateBookingPanel({
   function validateForm(): string | null {
     if (!selectedPackage) return "Select a package first.";
     if (bookingType === "movie-package" && !skipTitleSelection && !selectedContentTitle) return "Select a movie package title first.";
+    if (bookingType === "blockbuster" && !skipTitleSelection && (!filmId || !filmTitle)) {
+      return "Choose a film before completing this booking.";
+    }
     if (!selectedDate) return "Select a booking date.";
     if (!selectedSlot) return "Select a time slot.";
+    if (resolvedElapsedSlots.has(selectedSlot)) return "That slot has elapsed in WAT. Please choose a future slot.";
     if (details.fullName.trim().length < 2) return "Enter a valid full name.";
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(details.email.trim())) return "Enter a valid email address.";
     if (details.phoneNumber.trim().length < 8) return "Enter a valid phone number.";
@@ -246,6 +361,23 @@ export default function PrivateBookingPanel({
       return "Extra guests are only available with the Standard Package.";
     }
     return null;
+  }
+
+  function resolveBookingFailureMessage(rawError?: string): string {
+    if (!rawError) {
+      return "Payment verification failed. If your card was charged, contact support with your payment reference.";
+    }
+
+    const normalized = rawError.toLowerCase();
+    if (
+      normalized.includes("missing paystack secret key") ||
+      normalized.includes("paystack secret key format is invalid") ||
+      normalized.includes("string did not match the expected pattern")
+    ) {
+      return "Payment was received but booking confirmation failed due to a server payment configuration issue. Contact support with your payment reference for immediate confirmation.";
+    }
+
+    return rawError;
   }
 
   async function handlePayAndBook() {
@@ -272,7 +404,7 @@ export default function PrivateBookingPanel({
           bookingType,
           filmId,
           filmTitle,
-          contentTitleId: selectedContentTitleId,
+          contentTitleId: skipTitleSelection ? undefined : selectedContentTitleId,
           skipTitleSelection,
           packageId: selectedPackage.id,
           bookingDate: selectedDate,
@@ -319,7 +451,7 @@ export default function PrivateBookingPanel({
               const resolvedSuccessPath = successPath ?? "/book/success";
 
               if (!verifyResponse.ok || !verifyBody.success) {
-                const errorMessage = verifyBody.error ?? "Payment verification failed";
+                const errorMessage = resolveBookingFailureMessage(verifyBody.error);
                 router.push(`${resolvedFailedPath}?message=${encodeURIComponent(errorMessage)}`);
                 return;
               }
@@ -328,7 +460,8 @@ export default function PrivateBookingPanel({
               setSelectedSlot(null);
               router.push(`${resolvedSuccessPath}?ref=${encodeURIComponent(reference)}`);
             } catch (error) {
-              const errorMessage = error instanceof Error ? error.message : "Could not complete booking verification.";
+              const rawMessage = error instanceof Error ? error.message : "Could not complete booking verification.";
+              const errorMessage = resolveBookingFailureMessage(rawMessage);
               const resolvedFailedPath = failedPath ?? "/book/failed";
               router.push(`${resolvedFailedPath}?message=${encodeURIComponent(errorMessage)}`);
             } finally {
@@ -540,24 +673,35 @@ export default function PrivateBookingPanel({
                 {slotStepNumber}. Select Time Slot
               </h3>
               <p className="mt-1 font-outfit text-xs text-muted-foreground">
-                {isLoadingAvailability ? "Loading slot availability..." : "Slots stay visible even when currently unavailable."}
+                {isLoadingAvailability
+                  ? "Loading slot availability..."
+                  : "Only currently bookable slots are shown."}
               </p>
 
-              <div className="mt-4 grid gap-3">
-                {PRIVATE_TIME_SLOTS.map((slot) => {
+              {visibleTimeSlots.length === 0 ? (
+                <p className="mt-4 rounded-lg border border-border/40 bg-background/50 px-3 py-3 font-outfit text-sm text-muted-foreground">
+                  No slots are available for this date. Please choose another date.
+                </p>
+              ) : (
+                <div className="mt-4 grid gap-3">
+                  {visibleTimeSlots.map((slot) => {
                   const isTaken = takenSlots.has(slot.id);
+                  const isBlockedByAdmin = blockedSlots.has(slot.id);
+                  const isUnavailable = isTaken || isBlockedByAdmin;
                   const isSelected = selectedSlot === slot.id;
 
                   return (
                     <button
                       key={slot.id}
                       type="button"
-                      disabled={isTaken || isLoadingAvailability}
+                      disabled={isUnavailable}
                       onClick={() => setSelectedSlot(slot.id)}
                       className={cn(
                         "rounded-lg border px-3 py-2 text-left transition-all duration-300",
-                        isTaken
-                          ? "booking-slot-unavailable cursor-not-allowed border-cinema-gold/60 bg-cinema-gold/20 text-muted-foreground"
+                        isUnavailable
+                          ? isBlockedByAdmin
+                            ? "booking-slot-unavailable cursor-not-allowed border-red-400/50 bg-red-500/10 text-muted-foreground"
+                            : "booking-slot-unavailable cursor-not-allowed border-cinema-gold/60 bg-cinema-gold/20 text-muted-foreground"
                           : isSelected
                             ? "border-primary bg-primary/10 velvet-glow"
                             : "border-border/40 bg-background/40 hover:border-primary/40"
@@ -565,9 +709,11 @@ export default function PrivateBookingPanel({
                     >
                       <div className="flex items-center justify-between gap-4">
                         <span className="font-outfit text-sm">{slot.label}</span>
-                        {isTaken ? (
+                        {isUnavailable ? (
                           <span className="font-outfit text-[10px] uppercase tracking-wider text-gold">
-                            Currently Unavailable
+                            {isBlockedByAdmin
+                                ? "Blocked By Admin"
+                                : "Currently Unavailable"}
                           </span>
                         ) : (
                           <span className="font-outfit text-[10px] uppercase tracking-wider text-gold">
@@ -577,8 +723,9 @@ export default function PrivateBookingPanel({
                       </div>
                     </button>
                   );
-                })}
-              </div>
+                  })}
+                </div>
+              )}
             </div>
           </div>
 
@@ -700,7 +847,7 @@ export default function PrivateBookingPanel({
           </Button>
 
           <p className="mt-3 text-center font-outfit text-xs text-muted-foreground">
-            A slot is marked unavailable only after successful payment.
+            A slot is marked unavailable after slot start (WAT), successful payment, or an admin block.
           </p>
         </aside>
       </div>

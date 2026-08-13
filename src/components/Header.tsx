@@ -160,10 +160,10 @@ export default function Header() {
                 <div className="mt-10">
                   <Button
                     asChild
-                    className="velvet-glow w-full font-outfit text-xs tracking-widest uppercase"
-                    onClick={() => setMobileOpen(false)}
+                    className="velvet-glow w-full font-outfit text-xs tracking-widest uppercase" 
                   >
-                    <Link href="/now-showing/">
+                    <Link href="/now-showing/" 
+                    onClick={() => setMobileOpen(false)}>
                       <Ticket className="mr-1.5 h-4 w-4" />
                       Book Now
                     </Link>

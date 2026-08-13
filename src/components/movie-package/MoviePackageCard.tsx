@@ -20,6 +20,8 @@ export default function MoviePackageCard({ film, index = 0 }: MoviePackageCardPr
   const detailPath = `/movie-package/${film.id}/`;
   const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='10' height='15' viewBox='0 0 10 15' preserveAspectRatio='none'><rect width='100%' height='100%' fill='%23e6e6e6'/></svg>`;
   const blurDataURL = `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
+  const shouldBypassImageOptimization =
+    film.posterUrl.includes("supabase.co/storage/v1/object/public/");
 
   return (
     <div className="opacity-0 animate-fade-up" style={{ animationDelay: `${index * 80}ms` }}>
@@ -36,6 +38,7 @@ export default function MoviePackageCard({ film, index = 0 }: MoviePackageCardPr
             src={film.posterUrl}
             alt={film.title}
             fill
+            unoptimized={shouldBypassImageOptimization}
             placeholder="blur"
             blurDataURL={blurDataURL}
             className={cn(

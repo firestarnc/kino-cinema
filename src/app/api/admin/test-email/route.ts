@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { sendBookingConfirmationEmail } from "@/lib/booking-email";
 
 export async function POST(request: NextRequest) {
-  const body = (await request.json()) as { email?: string };
-  const email = body.email?.trim();
+  const body = (await request.json()) as { email?: string; "bookings@kinoscreen.com"?: string };
+  const email = body.email?.trim() ?? body["bookings@kinoscreen.com"]?.trim();
 
   if (!email) {
     return NextResponse.json({ error: "email is required" }, { status: 400 });
@@ -30,6 +30,9 @@ export async function POST(request: NextRequest) {
       status: "paid",
       paystack_reference: "test_reference",
       paid_at: new Date().toISOString(),
+      confirmation_email_sent_at: null,
+      payment_source: "online_paystack",
+      created_by_admin: null,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     });

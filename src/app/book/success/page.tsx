@@ -36,7 +36,7 @@ export default async function BookingSuccessPage({ searchParams }: SuccessPagePr
             </Link>
           </Button>
           <Button asChild variant="outline" className="font-outfit text-xs uppercase tracking-[0.25em]">
-            <Link href="/now-showing">Browse films</Link>
+            <Link href="/blockbuster">Browse films</Link>
           </Button>
         </div>
       </div>

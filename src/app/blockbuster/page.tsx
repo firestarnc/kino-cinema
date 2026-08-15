@@ -154,7 +154,7 @@ export default function NowShowingClient() {
               </h2>
               <p className="mt-3 max-w-2xl font-outfit text-sm text-muted-foreground md:text-base">
                 Reserve your private cinema package first, lock your date and slot,
-                then pick any movie in person when you arrive.
+                then pick any movie in person when you arrive
               </p>
             </div>
 

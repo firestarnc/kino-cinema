@@ -78,12 +78,16 @@ export async function POST(request: NextRequest) {
     }
 
     if (bookingForEmail) {
-      void sendBookingConfirmationEmail(bookingForEmail).catch((error) => {
+      try {
+        await sendBookingConfirmationEmail(bookingForEmail);
+      } catch (error) {
         console.error("[booking] Failed to send booking confirmation from verify route", {
           reference,
           error,
+          smtpResponse: (error as any)?.response,
+          code: (error as any)?.code,
         });
-      });
+      }
     }
 
     return NextResponse.json({ success: true });

@@ -101,6 +101,8 @@ export async function sendBookingConfirmationEmail(booking: PrivateBookingRow): 
       reference: booking.paystack_reference,
       recipient: booking.email,
       error,
+      smtpResponse: (error as any)?.response,
+      code: (error as any)?.code,
     });
     throw error;
   }
@@ -188,6 +190,8 @@ export async function sendAdminNotification(booking: PrivateBookingRow): Promise
       reference: booking.paystack_reference,
       recipients,
       error,
+      smtpResponse: (error as any)?.response,
+      code: (error as any)?.code,
     });
     throw error;
   }

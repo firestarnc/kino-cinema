@@ -162,12 +162,15 @@ export async function POST(request: NextRequest) {
     }
 
     if (booking) {
-      void sendBookingConfirmationEmail(booking).catch((sendError) => {
+      try {
+        await sendBookingConfirmationEmail(booking);
+      } catch (sendError) {
         console.error("[admin-direct-booking] Failed to send confirmation email", {
           reference,
           sendError,
         });
-      });
+        return NextResponse.json({ error: "Booking created but confirmation email failed" }, { status: 500 });
+      }
     }
 
     return NextResponse.json({

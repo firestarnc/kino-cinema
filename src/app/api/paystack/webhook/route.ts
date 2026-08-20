@@ -80,10 +80,12 @@ export async function POST(request: NextRequest) {
   }
 
   if (bookingForEmail) {
-    void sendBookingConfirmationEmail(bookingForEmail).catch((error) => {
+    sendBookingConfirmationEmail(bookingForEmail).catch((error) => {
       console.error("[booking] Failed to send booking confirmation from webhook route", {
         reference,
         error,
+        smtpResponse: (error as any)?.response,
+        code: (error as any)?.code,
       });
     });
   }

@@ -56,18 +56,16 @@ export async function markBookingPaid(reference: string): Promise<MarkBookingPai
 
   const statusChanged = Boolean(data) && !error;
 
-  if (statusChanged && data) {
+    if (statusChanged && data) {
     try {
-      void sendAdminNotification(data).catch((sendError) => {
-        console.error("[booking] Failed to send admin notification", {
-          reference,
-          sendError,
-        });
+      await sendAdminNotification(data);
+    } catch (sendError) {
+      console.error("[booking] Failed to send admin notification", {
+        reference,
+        sendError,
       });
-    } catch {
-      // do not block the flow on notification errors
     }
-  }
+    }
 
   return { error, booking: data ?? null, statusChanged };
 }

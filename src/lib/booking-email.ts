@@ -89,12 +89,18 @@ export async function sendBookingConfirmationEmail(booking: PrivateBookingRow): 
       },
     });
 
-    await transporter.sendMail({
+    const info = await transporter.sendMail({
       from: fromEmail,
       to: booking.email,
       subject: "Kino Screens booking confirmation",
       text,
       html,
+    });
+    console.info("[email] Sent booking confirmation", {
+      reference: booking.paystack_reference,
+      recipient: booking.email,
+      messageId: (info as any)?.messageId,
+      response: (info as any)?.response,
     });
   } catch (error) {
     console.error("[email] Failed to send booking confirmation", {
@@ -178,12 +184,18 @@ export async function sendAdminNotification(booking: PrivateBookingRow): Promise
       },
     });
 
-    await transporter.sendMail({
+    const info = await transporter.sendMail({
       from: fromEmail,
       to: recipients.join(","),
       subject,
       text,
       html,
+    });
+    console.info("[email] Sent admin notification", {
+      reference: booking.paystack_reference,
+      recipients,
+      messageId: (info as any)?.messageId,
+      response: (info as any)?.response,
     });
   } catch (error) {
     console.error("[email] Failed to send admin notification", {

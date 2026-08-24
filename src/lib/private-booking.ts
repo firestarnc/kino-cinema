@@ -41,7 +41,7 @@ export const BLOCKBUSTER_PACKAGES: PrivatePackage[] = [
     id: "couple",
     name: "Couple Package",
     capacity: "1-2 persons",
-    priceNaira: 150000,
+    priceNaira: 150,
     perks: [
       "A bottle of wine",
       "Unlimited popcorn",
@@ -86,7 +86,7 @@ export const MOVIE_PACKAGES: PrivatePackage[] = [
     id: "couple",
     name: "Couple Package",
     capacity: "1-2 persons",
-    priceNaira: 50000,
+    priceNaira: 150,
     perks: [
       "One bottle of wine",
       "Unlimited velvet popcorn",

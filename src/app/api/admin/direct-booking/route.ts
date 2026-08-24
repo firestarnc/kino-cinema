@@ -17,11 +17,11 @@ import {
   getMoviePackageTotal,
   getPackageById,
   getPackagesForBookingType,
+  getValidTimeSlotsForDate,
   isElapsedTimeSlot,
   isPastBookingDate,
   isValidISOBookingDate,
   MOVIE_PACKAGE_MAX_EXTRA_GUESTS,
-  PRIVATE_TIME_SLOTS,
   type BookingType,
   type PrivatePackageId,
   type TimeSlotId,
@@ -74,7 +74,7 @@ function isValidPayload(payload: Partial<DirectBookingPayload>): payload is Dire
   if (!isValidBookingType(bookingType)) return false;
   if (!payload.packageId || !getPackagesForBookingType(bookingType).some((pkg) => pkg.id === payload.packageId)) return false;
   if (!payload.bookingDate || !isValidISOBookingDate(payload.bookingDate) || isPastBookingDate(payload.bookingDate)) return false;
-  if (!payload.timeSlot || !PRIVATE_TIME_SLOTS.some((slot) => slot.id === payload.timeSlot)) return false;
+  if (!payload.timeSlot || !getValidTimeSlotsForDate(payload.bookingDate).some((slot) => slot.id === payload.timeSlot)) return false;
   if (!payload.fullName || payload.fullName.trim().length < 2) return false;
   if (!payload.email || !isValidEmail(payload.email)) return false;
   if (!payload.phoneNumber || payload.phoneNumber.trim().length < 8) return false;

@@ -12,9 +12,9 @@ import {
   hasPaidBookingForSlot,
 } from "@/lib/private-booking-db";
 import {
+  getValidTimeSlotsForDate,
   isPastBookingDate,
   isValidISOBookingDate,
-  PRIVATE_TIME_SLOTS,
   type TimeSlotId,
 } from "@/lib/private-booking";
 
@@ -50,7 +50,7 @@ function isValidPayload(payload: CreateSlotBlockPayload): payload is Required<Pi
     return false;
   }
 
-  if (!payload.timeSlot || !PRIVATE_TIME_SLOTS.some((slot) => slot.id === payload.timeSlot)) {
+  if (!payload.timeSlot || !getValidTimeSlotsForDate(payload.bookingDate).some((slot) => slot.id === payload.timeSlot)) {
     return false;
   }
 

@@ -12,6 +12,7 @@ import {
   getMoviePackageTitleById,
   getMoviePackageTotal,
   getPackagesForBookingType,
+  getValidTimeSlotsForDate,
   isElapsedTimeSlot,
   isMoviePackageEligibleForExtraGuests,
   isPastBookingDate,
@@ -307,11 +308,13 @@ export default function PrivateBookingPanel({
 
     const now = new Date(clockTickMs);
     return new Set(
-      PRIVATE_TIME_SLOTS.filter((slot) => isElapsedTimeSlot(selectedDate, slot.id, now)).map(
+      getValidTimeSlotsForDate(selectedDate).filter((slot) => isElapsedTimeSlot(selectedDate, slot.id, now)).map(
         (slot) => slot.id
       )
     );
   }, [clockTickMs, selectedDate]);
+
+  const validTimeSlots = useMemo(() => getValidTimeSlotsForDate(selectedDate), [selectedDate]);
 
   const resolvedElapsedSlots = useMemo(
     () => new Set([...elapsedSlots, ...runtimeElapsedSlots]),
@@ -319,8 +322,8 @@ export default function PrivateBookingPanel({
   );
 
   const visibleTimeSlots = useMemo(
-    () => PRIVATE_TIME_SLOTS.filter((slot) => !resolvedElapsedSlots.has(slot.id)),
-    [resolvedElapsedSlots]
+    () => validTimeSlots.filter((slot) => !resolvedElapsedSlots.has(slot.id)),
+    [resolvedElapsedSlots, validTimeSlots]
   );
 
   useEffect(() => {
@@ -328,10 +331,10 @@ export default function PrivateBookingPanel({
       return;
     }
 
-    if (resolvedElapsedSlots.has(selectedSlot)) {
+    if (!validTimeSlots.some((slot) => slot.id === selectedSlot) || resolvedElapsedSlots.has(selectedSlot)) {
       setSelectedSlot(null);
     }
-  }, [resolvedElapsedSlots, selectedSlot]);
+  }, [resolvedElapsedSlots, selectedSlot, validTimeSlots]);
 
   function updateDetails(field: keyof BookingDetails, value: string) {
     setDetails((prev) => ({

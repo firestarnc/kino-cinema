@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getBlockedSlotsForDate, getPaidSlotsForDate } from "@/lib/private-booking-db";
 import {
+  getValidTimeSlotsForDate,
   isElapsedTimeSlot,
   isValidISOBookingDate,
   lagosTodayISODate,
-  PRIVATE_TIME_SLOTS,
 } from "@/lib/private-booking";
 
 const AVAILABILITY_RESPONSE_CACHE_SECONDS = 15;
@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
       getPaidSlotsForDate(date),
       getBlockedSlotsForDate(date),
     ]);
-    const elapsedSlots = PRIVATE_TIME_SLOTS
+    const elapsedSlots = getValidTimeSlotsForDate(date)
       .filter((slot) => isElapsedTimeSlot(date, slot.id))
       .map((slot) => slot.id);
     const unavailableSlots = Array.from(

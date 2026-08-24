@@ -1,12 +1,13 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   getPackagesForBookingType,
   getMoviePackageTotal,
+  getValidTimeSlotsForDate,
   MOVIE_PACKAGE_TITLES,
   MOVIE_PACKAGE_MAX_EXTRA_GUESTS,
   PRIVATE_TIME_SLOTS,
@@ -44,7 +45,9 @@ interface SlotBlockFormState {
   reason: string;
 }
 
-const DEFAULT_TIME_SLOT: TimeSlotId = PRIVATE_TIME_SLOTS[0].id;
+const DEFAULT_BOOKING_DATE = lagosTodayISODate();
+const DEFAULT_DATE_TIME_SLOT: TimeSlotId =
+  getValidTimeSlotsForDate(DEFAULT_BOOKING_DATE)[0]?.id ?? PRIVATE_TIME_SLOTS[0].id;
 
 export default function AdminBookingsManager({ initialSlotBlocks }: AdminBookingsManagerProps) {
   const router = useRouter();
@@ -58,8 +61,8 @@ export default function AdminBookingsManager({ initialSlotBlocks }: AdminBooking
     packageId: "couple",
     filmTitle: "",
     contentTitleId: MOVIE_PACKAGE_TITLES[0]?.id ?? "",
-    bookingDate: lagosTodayISODate(),
-    timeSlot: DEFAULT_TIME_SLOT,
+    bookingDate: DEFAULT_BOOKING_DATE,
+    timeSlot: DEFAULT_DATE_TIME_SLOT,
     additionalGuests: 0,
     fullName: "",
     email: "",
@@ -68,8 +71,8 @@ export default function AdminBookingsManager({ initialSlotBlocks }: AdminBooking
   });
 
   const [slotBlockForm, setSlotBlockForm] = useState<SlotBlockFormState>({
-    bookingDate: lagosTodayISODate(),
-    timeSlot: DEFAULT_TIME_SLOT,
+    bookingDate: DEFAULT_BOOKING_DATE,
+    timeSlot: DEFAULT_DATE_TIME_SLOT,
     reason: "",
   });
 
@@ -79,6 +82,26 @@ export default function AdminBookingsManager({ initialSlotBlocks }: AdminBooking
   );
 
   const canAddExtraGuests = directForm.bookingType === "movie-package" && directForm.packageId === "standard";
+  const validDirectTimeSlots = useMemo(
+    () => getValidTimeSlotsForDate(directForm.bookingDate),
+    [directForm.bookingDate]
+  );
+  const validBlockTimeSlots = useMemo(
+    () => getValidTimeSlotsForDate(slotBlockForm.bookingDate),
+    [slotBlockForm.bookingDate]
+  );
+
+  useEffect(() => {
+    if (!validDirectTimeSlots.some((slot) => slot.id === directForm.timeSlot)) {
+      updateDirectForm("timeSlot", validDirectTimeSlots[0]?.id ?? PRIVATE_TIME_SLOTS[0].id);
+    }
+  }, [directForm.timeSlot, validDirectTimeSlots]);
+
+  useEffect(() => {
+    if (!validBlockTimeSlots.some((slot) => slot.id === slotBlockForm.timeSlot)) {
+      updateSlotBlockForm("timeSlot", validBlockTimeSlots[0]?.id ?? PRIVATE_TIME_SLOTS[0].id);
+    }
+  }, [slotBlockForm.timeSlot, validBlockTimeSlots]);
 
   const totalAmount = useMemo(() => {
     if (directForm.bookingType === "movie-package" && directForm.packageId === "standard") {
@@ -274,7 +297,7 @@ export default function AdminBookingsManager({ initialSlotBlocks }: AdminBooking
             </label>
           ) : (
             <label className="space-y-1 sm:col-span-2">
-              <span className="font-outfit text-xs uppercase tracking-[0.2em] text-muted-foreground">Movie Package Title</span>
+              <span className="font-outfit text-xs uppercase tracking-[0.2em] text-muted-foreground">Select Movie (In-Cinema)</span>
               <select
                 value={directForm.contentTitleId}
                 onChange={(event) => updateDirectForm("contentTitleId", event.target.value)}
@@ -284,6 +307,9 @@ export default function AdminBookingsManager({ initialSlotBlocks }: AdminBooking
                   <option key={title.id} value={title.id}>{title.title}</option>
                 ))}
               </select>
+              <p className="font-outfit text-xs text-muted-foreground">
+                This is the movie title chosen for the in-cinema movie package session.
+              </p>
             </label>
           )}
 
@@ -305,7 +331,7 @@ export default function AdminBookingsManager({ initialSlotBlocks }: AdminBooking
               onChange={(event) => updateDirectForm("timeSlot", event.target.value as TimeSlotId)}
               className="w-full rounded-lg border border-border/50 bg-background/70 px-3 py-2 font-outfit text-sm text-foreground outline-none transition focus:border-primary"
             >
-              {PRIVATE_TIME_SLOTS.map((slot) => (
+              {validDirectTimeSlots.map((slot) => (
                 <option key={slot.id} value={slot.id}>{slot.label}</option>
               ))}
             </select>
@@ -410,7 +436,7 @@ export default function AdminBookingsManager({ initialSlotBlocks }: AdminBooking
               onChange={(event) => updateSlotBlockForm("timeSlot", event.target.value as TimeSlotId)}
               className="w-full rounded-lg border border-border/50 bg-background/70 px-3 py-2 font-outfit text-sm text-foreground outline-none transition focus:border-primary"
             >
-              {PRIVATE_TIME_SLOTS.map((slot) => (
+              {validBlockTimeSlots.map((slot) => (
                 <option key={slot.id} value={slot.id}>{slot.label}</option>
               ))}
             </select>

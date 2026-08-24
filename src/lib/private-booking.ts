@@ -28,7 +28,8 @@ export type TimeSlotId =
   | "09:00-12:00"
   | "12:00-15:00"
   | "15:00-18:00"
-  | "18:00-21:00";
+  | "18:00-21:00"
+  | "21:00-00:00";
 
 export interface TimeSlot {
   id: TimeSlotId;
@@ -125,6 +126,7 @@ export const PRIVATE_TIME_SLOTS: TimeSlot[] = [
   { id: "12:00-15:00", label: "12:00 PM - 3:00 PM" },
   { id: "15:00-18:00", label: "3:00 PM - 6:00 PM" },
   { id: "18:00-21:00", label: "6:00 PM - 9:00 PM" },
+  { id: "21:00-00:00", label: "9:00 PM - 12:00 AM" },
 ];
 
 export const PRIVATE_MENU_NOTE =
@@ -220,6 +222,39 @@ export function formatNaira(amount: number): string {
 
 export function lagosTodayISODate(): string {
   return getLagosDateTimeParts().dateISO;
+}
+
+export function getBookingDayOfWeek(dateISO: string): number {
+  if (!isValidISOBookingDate(dateISO)) {
+    return -1;
+  }
+
+  const [year, month, day] = dateISO.split("-").map(Number);
+  return new Date(Date.UTC(year, month - 1, day)).getUTCDay();
+}
+
+export function getValidTimeSlotsForDate(dateISO: string): TimeSlot[] {
+  if (!isValidISOBookingDate(dateISO)) {
+    return [];
+  }
+
+  const dayOfWeek = getBookingDayOfWeek(dateISO);
+
+  return PRIVATE_TIME_SLOTS.filter((slot) => {
+    if (slot.id === "09:00-12:00" && dayOfWeek === 0) {
+      return false;
+    }
+
+    if (slot.id === "21:00-00:00") {
+      return dayOfWeek === 5 || dayOfWeek === 6 || dayOfWeek === 0;
+    }
+
+    return true;
+  });
+}
+
+export function isValidTimeSlotForDate(dateISO: string, slotId: TimeSlotId): boolean {
+  return getValidTimeSlotsForDate(dateISO).some((slot) => slot.id === slotId);
 }
 
 export function isValidISOBookingDate(dateISO: string): boolean {

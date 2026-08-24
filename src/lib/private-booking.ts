@@ -110,13 +110,24 @@ export const MOVIE_PACKAGES: PrivatePackage[] = [
   },
 ];
 
-export const MOVIE_PACKAGE_TITLES: MoviePackageTitle[] = moviePackageFilms.map((film) => ({
-  id: film.id,
-  filmId: film.id,
-  title: film.title,
+const SELECT_IN_CINEMA_TITLE: MoviePackageTitle = {
+  id: "select-in-cinema",
+  filmId: "",
+  title: "To be selected in cinema",
   platform: "Movie Package",
-  description: `${film.genre} • ${film.duration} min • ${film.rating}`,
-}));
+  description: "Selected in person at the cinema",
+};
+
+export const MOVIE_PACKAGE_TITLES: MoviePackageTitle[] = [
+  SELECT_IN_CINEMA_TITLE,
+  ...moviePackageFilms.map((film) => ({
+    id: film.id,
+    filmId: film.id,
+    title: film.title,
+    platform: "Movie Package",
+    description: `${film.genre} • ${film.duration} min • ${film.rating}`,
+  })),
+];
 
 export const MOVIE_PACKAGE_MAX_EXTRA_GUESTS = 3;
 export const MOVIE_PACKAGE_EXTRA_GUEST_PRICE_NAIRA = 15000;

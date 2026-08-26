@@ -721,7 +721,7 @@ export const moviePackageFilms: MoviePackageFilm[] = [
   },
   {
     id: "they-will-kill-you",
-    title: "They will kill you",
+    title: "They Will Kill You",
     tagline: "Choose your floor wisely.",
     genre: "Horror Action Comedy",
     duration: 94,
@@ -735,7 +735,54 @@ export const moviePackageFilms: MoviePackageFilm[] = [
     posterUrl: buildMoviePackagePosterUrl("They Will Kill You 2026.jpg"),
     imdbRating: 6.5,
   },
-  
+  {
+    id: "the-sheeps-detectives",
+    title: "The Sheep's Detectives",
+    tagline: "It's a mystery for the whole flock.",
+    genre: "Mystery Family Comedy",
+    duration: 109,
+    rating: "PG",
+    year: 2026,
+    director: "Kyle Balda",
+    cast: ["Hugh Jackman", "Emma Thompson", "Nicholas Braun", "Nicholas Galitzine"],
+    synopsis:
+      "When their beloved shepherd is mysteriously murdered, a clever flock of sheep uses the murder mystery stories he read to them to solve the crime.",
+    posterFile: "The Sheep Detectives.jpg",
+    posterUrl: buildMoviePackagePosterUrl("The Sheep Detectives.jpg"),
+    imdbRating: 7.5,
+  },
+  {
+    id: "the-death-of-robinhoob",
+    title: "The Death of Robinhoob",
+    tagline: "The legend was a lie.",
+    genre: "Action Adventure Drama",
+    duration: 123,
+    rating: "R",
+    year: 2026,
+    director: "Michael Sarnoski",
+    cast: ["Hugh Jackman", "Jodie Comer", "Bill Skarsgård", "Murray Bartlett"],
+    synopsis:
+      "An aging, gravely injured Robin Hood grapples with his past life of violence while recovering under the care of a mysterious nun at a remote priory.",
+    posterFile: "The Death of Robin Hood (2026).jpg",
+    posterUrl: buildMoviePackagePosterUrl("The Death of Robin Hood (2026).jpg"),
+    imdbRating: 7.4,
+  },
+  {
+    id: "voicemails-of-isabelle",
+    title: "Voicemails of Isabelle",
+    tagline: "Pick up the phone.",
+    genre: "Romance Comedy Drama",
+    duration: 118,
+    rating: "R",
+    year: 2026,
+    director: "Leah McKendrick",
+    cast: ["Zoey Deutch", "Nick Robinson", "Harry Shum Jr.", "Ciara Bravo"],
+    synopsis:
+      "A young woman's confessional voicemails to her late sister are unknowingly redirected to a stranger, who begins to fall in love with her.",
+    posterFile: "Voicemails for Isabelle 2026.jpg",
+    posterUrl: buildMoviePackagePosterUrl("Voicemails for Isabelle 2026.jpg"),
+    imdbRating: 7.3,
+  },
 ];
 
 // -----------------------------------------------------------------------------

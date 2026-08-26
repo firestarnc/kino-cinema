@@ -6,7 +6,7 @@
 // Types
 // -----------------------------------------------------------------------------
 
-export type FilmRating = "G" | "PG" | "PG-13" | "R" | "NC-17";
+export type FilmRating = "G" | "PG" | "PG-13" | "R" | "NC-17" | "NR";
 
 export interface Film {
   id: string;
@@ -558,6 +558,102 @@ export const moviePackageFilms: MoviePackageFilm[] = [
     posterFile: "avatarfire.png",
     posterUrl: buildMoviePackagePosterUrl("avatarfire.png"),
     imdbRating: 8.0,
+  },
+  {
+    id: "thepunisher",
+    title: "The Punisher",
+    tagline: "Vengeance Has A Name.",
+    genre: "Action Thriller",
+    duration: 124,
+    rating: "R",
+    year: 2026,
+    director: "Reinaldo Marcus Green",
+    cast: ["Frank Castle", "Karen Page", "Curtis Hoyle", "Ma Gnucci"],
+    synopsis:
+      "The narrative follows Frank Castle, who is in hiding and attempting to move past his life of vengeance.",
+    posterFile: "The Punisher One Last Kill Movie 2026.jpg",
+    posterUrl: buildMoviePackagePosterUrl("The Punisher One Last Kill Movie 2026.jpg"),
+    imdbRating: 7.5,
+  },
+  {
+    id: "yourfaultlondon",
+    title: "Your Fault London",
+    tagline: "How do you hold onto true love after you've found it?",
+    genre: "Romance Drama",
+    duration: 123,
+    rating: "R",
+    year: 2026,
+    director: "Charlotte Fassler and Dani Girdwood",
+    cast: ["Asha Banks", "Matthew Broome", "Louisa Binder", "Joel Nankervis"],
+    synopsis:
+      "Nick and Noah are both embarking on life-changing adventures that are threatening to pull them apart—Nick in business with his father and Noah starting a fresh chapter at Oxford University. Now living separate lives, and meeting new people, they find themselves entangled in temptations, rivalries, and betrayals and their bond is tested like never before.",
+    posterFile: "Your Fault London (2026).jpg",
+    posterUrl: buildMoviePackagePosterUrl("Your Fault London (2026).jpg"),
+    imdbRating: 6.5,
+  },
+  {
+    id: "mebeforeyou",
+    title: "Me before you",
+    tagline: "Live boldly. Push yourself. Don't settle. ",
+    genre: "Romance Drama",
+    duration: 110,
+    rating: "PG-13",
+    year: 2016,
+    director: "Thea Sharrock",
+    cast: ["Emilia Clarke", "Sam Claflin", "Janet McTeer", "Charles Dance"],
+    synopsis:
+      "A cheerful young woman becomes a caregiver for a wealthy, paralyzed man and forms an unlikely bond with him that transforms both of their lives.",
+    posterFile: "me before you 2016.jpg",
+    posterUrl: buildMoviePackagePosterUrl("me before you 2016.jpg"),
+    imdbRating: 8.5,
+  },
+  {
+    id: "kraken",
+    title: "Kraken",
+    tagline: "Fear the Depths.",
+    genre: "Horror Thriller",
+    duration: 100,
+    rating: "NR",
+    year: 2026,
+    director: "Pål Øie",
+    cast: ["Sara Khorami", "Mikkel Bratt Silset", "Ingvild Holthe Bygdnes", "Øyvind Brandtzæg"],
+    synopsis:
+      "A marine biologist investigating mysterious events at a Norwegian fish farm discovers that advanced sonar technology has awakened a giant, ancient creature from the depths of the fjord.",
+    posterFile: "Kraken 2026.jpg",
+    posterUrl: buildMoviePackagePosterUrl("Kraken 2026.jpg"),
+    imdbRating: 6.5,
+  },
+  {
+    id: "isgodis",
+    title: "Is GOD is",
+    tagline: "Make your daddy dead. Real dead.",
+    genre: "Action Drama",
+    duration: 99,
+    rating: "R",
+    year: 2026,
+    director: "Aleshea Harris",
+    cast: ["Kara Young", "Mallori Johnson", "Janelle Monáe", "Sterling K. Brown"],
+    synopsis:
+      "Two sisters embark on an epic quest for revenge against their father after receiving a request from their estranged mother.",
+    posterFile: "Is God Is (2026).jpg",
+    posterUrl: buildMoviePackagePosterUrl("Is God Is (2026).jpg"),
+    imdbRating: 8.0,
+  },
+  {
+    id: "toystory5",
+    title: "Toy story 5",
+    tagline: "To Infinity and Beyond!",
+    genre: "Animation Comedy",
+    duration: 102,
+    rating: "PG",
+    year: 2026,
+    director: "Andrew Stanton",
+    cast: ["Tom Hanks", "Tim Allen", "Joan Cusack", "Greta Lee"],
+    synopsis:
+      "Buzz, Woody, Jessie, and the rest of the gang face a new challenge when Bonnie receives a tablet device called Lilypad, threatening their traditional roles as playthings.",
+    posterFile: "toy story 5 2026.jpg",
+    posterUrl: buildMoviePackagePosterUrl("toy story 5 2026.jpg"),
+    imdbRating: 8.5,
   },
 ];
 

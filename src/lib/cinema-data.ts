@@ -619,8 +619,8 @@ export const moviePackageFilms: MoviePackageFilm[] = [
     cast: ["Sara Khorami", "Mikkel Bratt Silset", "Ingvild Holthe Bygdnes", "Øyvind Brandtzæg"],
     synopsis:
       "A marine biologist investigating mysterious events at a Norwegian fish farm discovers that advanced sonar technology has awakened a giant, ancient creature from the depths of the fjord.",
-    posterFile: "Kraken 2026.jpg",
-    posterUrl: buildMoviePackagePosterUrl("Kraken 2026.jpg"),
+    posterFile: "Kraken 2026 .jpg",
+    posterUrl: buildMoviePackagePosterUrl("Kraken 2026 .jpg"),
     imdbRating: 6.5,
   },
   {

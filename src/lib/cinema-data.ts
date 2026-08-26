@@ -655,6 +655,22 @@ export const moviePackageFilms: MoviePackageFilm[] = [
     posterUrl: buildMoviePackagePosterUrl("toy story 5 2026.jpg"),
     imdbRating: 8.5,
   },
+  {
+    id: "together",
+    title: "Together",
+    tagline: "Complacency can sometimes be harmony.",
+    genre: "Horror, Romance",
+    duration: 102,
+    rating: "R",
+    year: 2025,
+    director: "Michael Shanks",
+    cast: ["Dave Franco", "Alison Brie", "Damon Herriman", "Mia Morrissey"],
+    synopsis:
+      "A couple moves to the countryside to start fresh, only for a nightmarish encounter with a supernatural force to physically fuse their bodies together.",
+    posterFile: "together 2025.jpg",
+    posterUrl: buildMoviePackagePosterUrl("together 2025.jpg"),
+    imdbRating: 7.5,
+  },
 ];
 
 // -----------------------------------------------------------------------------

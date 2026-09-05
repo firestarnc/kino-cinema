@@ -861,8 +861,8 @@ export const moviePackageFilms: MoviePackageFilm[] = [
     cast: ["Bruce Willis", "Neal McDonough", "Corey William Large", "Trevor Gretzky"],
     synopsis:
       "A disgraced ex-cop is offered a chance at freedom if he can survive being hunted by six rich hunters on a remote island.",
-    posterFile: "apex 2021.jpg",
-    posterUrl: buildMoviePackagePosterUrl("apex 2021.jpg"),
+    posterFile: "apex_2021.jpg",
+    posterUrl: buildMoviePackagePosterUrl("apex_2021.jpg"),
     imdbRating: 6.1,
   },
   {

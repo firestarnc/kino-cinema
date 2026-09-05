@@ -941,8 +941,8 @@ export const moviePackageFilms: MoviePackageFilm[] = [
     cast: ["Chris Pratt", "Anya Taylor-Joy", "Charlie Day", "Jack Black"],
     synopsis:
     "Mario, Luigi, Princess Peach, Toad, and Yoshi embark on a galactic adventure across space to rescue Princess Rosalina from Bowser Jr. and Bowser.",
-    posterFile: "the super mario galaxy 2026.jpg",
-    posterUrl: buildMoviePackagePosterUrl("the super mario galaxy 2026.jpg"),
+    posterFile: "The Super Mario Galaxy Movie 2026.jpg",
+    posterUrl: buildMoviePackagePosterUrl("The Super Mario Galaxy Movie 2026.jpg"),
     imdbRating: 6.3,
   },
   {

@@ -51,7 +51,7 @@ export async function sendBookingConfirmationEmail(booking: PrivateBookingRow): 
       { label: "Booking Type", value: bookingTypeLabel },
       { label: "Package", value: booking.package_name },
       { label: "Amount Paid", value: amountPaid },
-      { label: "Rose Decoration", value: roseDecorationValue },
+      { label: "Rose Decoratio", value: roseDecorationValue },
       { label: "Schedule", value: bookingLabel },
       { label: booking.booking_type === "movie-package" ? "Title" : "Movie", value: movieValue },
       ...(extraGuestValue ? [{ label: "Extra Guests", value: extraGuestValue }] : []),

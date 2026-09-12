@@ -21,6 +21,7 @@ export async function POST(request: NextRequest) {
       package_name: "Premium Package",
       package_price_ngn: 350000,
       additional_guests: 0,
+      include_rose_decoration: false,
       booking_date: new Date().toISOString().slice(0, 10),
       time_slot: "18:00-21:00",
       full_name: "Kino Guest",

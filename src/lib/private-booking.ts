@@ -131,6 +131,7 @@ export const MOVIE_PACKAGE_TITLES: MoviePackageTitle[] = [
 
 export const MOVIE_PACKAGE_MAX_EXTRA_GUESTS = 3;
 export const MOVIE_PACKAGE_EXTRA_GUEST_PRICE_NAIRA = 15000;
+export const ROSE_DECORATION_PRICE_NAIRA = 10000;
 
 export const PRIVATE_TIME_SLOTS: TimeSlot[] = [
   { id: "09:00-12:00", label: "9:00 AM - 12:00 PM" },
@@ -215,6 +216,14 @@ export function getMoviePackageTotal(packageId: MoviePackageId, additionalGuests
   );
 
   return basePackage.priceNaira + clampedAdditionalGuests * MOVIE_PACKAGE_EXTRA_GUEST_PRICE_NAIRA;
+}
+
+export function applyRoseDecorationCharge(baseAmountNaira: number, includeRoseDecoration: boolean): number {
+  if (!includeRoseDecoration) {
+    return baseAmountNaira;
+  }
+
+  return baseAmountNaira + ROSE_DECORATION_PRICE_NAIRA;
 }
 
 export function isMoviePackageEligibleForExtraGuests(packageId: PrivatePackageId | null): packageId is MoviePackageId {

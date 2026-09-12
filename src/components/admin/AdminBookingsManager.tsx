@@ -5,12 +5,14 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
+  applyRoseDecorationCharge,
   getPackagesForBookingType,
   getMoviePackageTotal,
   getValidTimeSlotsForDate,
   MOVIE_PACKAGE_TITLES,
   MOVIE_PACKAGE_MAX_EXTRA_GUESTS,
   PRIVATE_TIME_SLOTS,
+  ROSE_DECORATION_PRICE_NAIRA,
   formatNaira,
   lagosTodayISODate,
   type BookingType,
@@ -33,6 +35,7 @@ interface DirectBookingFormState {
   bookingDate: string;
   timeSlot: TimeSlotId;
   additionalGuests: number;
+  includeRoseDecoration: boolean;
   fullName: string;
   email: string;
   phoneNumber: string;
@@ -64,6 +67,7 @@ export default function AdminBookingsManager({ initialSlotBlocks }: AdminBooking
     bookingDate: DEFAULT_BOOKING_DATE,
     timeSlot: DEFAULT_DATE_TIME_SLOT,
     additionalGuests: 0,
+    includeRoseDecoration: false,
     fullName: "",
     email: "",
     phoneNumber: "",
@@ -104,13 +108,13 @@ export default function AdminBookingsManager({ initialSlotBlocks }: AdminBooking
   }, [slotBlockForm.timeSlot, validBlockTimeSlots]);
 
   const totalAmount = useMemo(() => {
-    if (directForm.bookingType === "movie-package" && directForm.packageId === "standard") {
-      return getMoviePackageTotal("standard", directForm.additionalGuests);
-    }
+    const baseAmountNaira =
+      directForm.bookingType === "movie-package" && directForm.packageId === "standard"
+        ? getMoviePackageTotal("standard", directForm.additionalGuests)
+        : (availablePackages.find((pkg) => pkg.id === directForm.packageId)?.priceNaira ?? 0);
 
-    const selectedPackage = availablePackages.find((pkg) => pkg.id === directForm.packageId);
-    return selectedPackage?.priceNaira ?? 0;
-  }, [availablePackages, directForm.additionalGuests, directForm.bookingType, directForm.packageId]);
+    return applyRoseDecorationCharge(baseAmountNaira, directForm.includeRoseDecoration);
+  }, [availablePackages, directForm.additionalGuests, directForm.bookingType, directForm.includeRoseDecoration, directForm.packageId]);
 
   function updateDirectForm<K extends keyof DirectBookingFormState>(key: K, value: DirectBookingFormState[K]) {
     setDirectForm((prev) => ({ ...prev, [key]: value }));
@@ -144,6 +148,7 @@ export default function AdminBookingsManager({ initialSlotBlocks }: AdminBooking
           bookingDate: directForm.bookingDate,
           timeSlot: directForm.timeSlot,
           additionalGuests: canAddExtraGuests ? directForm.additionalGuests : 0,
+          includeRoseDecoration: directForm.includeRoseDecoration,
           fullName: directForm.fullName,
           email: directForm.email,
           phoneNumber: directForm.phoneNumber,
@@ -384,6 +389,21 @@ export default function AdminBookingsManager({ initialSlotBlocks }: AdminBooking
               />
             </label>
           ) : null}
+
+          <label className="space-y-2 sm:col-span-2">
+            <span className="font-outfit text-xs uppercase tracking-[0.2em] text-muted-foreground">Rose Decoration</span>
+            <span className="inline-flex items-start gap-3 rounded-lg border border-border/50 bg-background/50 px-3 py-3">
+              <input
+                type="checkbox"
+                checked={directForm.includeRoseDecoration}
+                onChange={(event) => updateDirectForm("includeRoseDecoration", event.target.checked)}
+                className="mt-0.5 h-4 w-4 rounded border-border/70"
+              />
+              <span className="font-outfit text-sm text-foreground">
+                Yes, include roses floor and table decoration design (+{formatNaira(ROSE_DECORATION_PRICE_NAIRA)}).
+              </span>
+            </span>
+          </label>
 
           <label className="space-y-1 sm:col-span-2">
             <span className="font-outfit text-xs uppercase tracking-[0.2em] text-muted-foreground">Notes</span>

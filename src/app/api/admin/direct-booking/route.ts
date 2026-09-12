@@ -13,6 +13,7 @@ import {
   isSlotBlockedByAdmin,
 } from "@/lib/private-booking-db";
 import {
+  applyRoseDecorationCharge,
   getMoviePackageTitleById,
   getMoviePackageTotal,
   getPackageById,
@@ -35,6 +36,7 @@ interface DirectBookingPayload {
   skipTitleSelection?: boolean;
   packageId: PrivatePackageId;
   additionalGuests?: number;
+  includeRoseDecoration?: boolean;
   bookingDate: string;
   timeSlot: TimeSlotId;
   fullName: string;
@@ -78,6 +80,7 @@ function isValidPayload(payload: Partial<DirectBookingPayload>): payload is Dire
   if (!payload.fullName || payload.fullName.trim().length < 2) return false;
   if (!payload.email || !isValidEmail(payload.email)) return false;
   if (!payload.phoneNumber || payload.phoneNumber.trim().length < 8) return false;
+  if (typeof payload.includeRoseDecoration !== "undefined" && typeof payload.includeRoseDecoration !== "boolean") return false;
 
   if (bookingType === "blockbuster" && !payload.skipTitleSelection && !payload.filmTitle) return false;
 
@@ -109,9 +112,11 @@ export async function POST(request: NextRequest) {
   const additionalGuests = bookingType === "movie-package" && body.packageId === "standard"
     ? body.additionalGuests ?? 0
     : 0;
-  const amountNaira = bookingType === "movie-package" && body.packageId === "standard"
+  const includeRoseDecoration = body.includeRoseDecoration ?? false;
+  const baseAmountNaira = bookingType === "movie-package" && body.packageId === "standard"
     ? getMoviePackageTotal("standard", additionalGuests)
     : bookingPackage.priceNaira;
+  const amountNaira = applyRoseDecorationCharge(baseAmountNaira, includeRoseDecoration);
 
   try {
     if (isElapsedTimeSlot(body.bookingDate, body.timeSlot)) {
@@ -140,6 +145,7 @@ export async function POST(request: NextRequest) {
       package_name: bookingPackage.name,
       package_price_ngn: amountNaira,
       additional_guests: additionalGuests,
+      include_rose_decoration: includeRoseDecoration,
       booking_date: body.bookingDate,
       time_slot: body.timeSlot,
       full_name: body.fullName.trim(),

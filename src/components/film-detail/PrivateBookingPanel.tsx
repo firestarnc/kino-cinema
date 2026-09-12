@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
+  applyRoseDecorationCharge,
   formatNaira,
   getMoviePackageTitleByFilmId,
   getMoviePackageTitleById,
@@ -23,6 +24,7 @@ import {
   MOVIE_PACKAGE_MENU_NOTE,
   MOVIE_PACKAGE_TITLES,
   PRIVATE_MENU_NOTE,
+  ROSE_DECORATION_PRICE_NAIRA,
   PRIVATE_TIME_SLOTS,
   type BookingType,
   type PrivatePackage,
@@ -87,6 +89,7 @@ export default function PrivateBookingPanel({
   const [selectedContentTitleId, setSelectedContentTitleId] = useState<string | null>(null);
   const [visibleMovieCount, setVisibleMovieCount] = useState(6);
   const [additionalGuests, setAdditionalGuests] = useState(0);
+  const [includeRoseDecoration, setIncludeRoseDecoration] = useState(false);
   const [takenSlots, setTakenSlots] = useState<Set<string>>(new Set());
   const [blockedSlots, setBlockedSlots] = useState<Set<string>>(new Set());
   const [elapsedSlots, setElapsedSlots] = useState<Set<string>>(new Set());
@@ -135,12 +138,15 @@ export default function PrivateBookingPanel({
       return 0;
     }
 
-    if (bookingType === "movie-package" && selectedPackage.id === "standard") {
-      return getMoviePackageTotal("standard", additionalGuests);
-    }
+    const baseAmountNaira =
+      bookingType === "movie-package" && selectedPackage.id === "standard"
+        ? getMoviePackageTotal("standard", additionalGuests)
+        : selectedPackage.priceNaira;
 
-    return selectedPackage.priceNaira;
-  }, [additionalGuests, bookingType, selectedPackage]);
+    return applyRoseDecorationCharge(baseAmountNaira, includeRoseDecoration);
+  }, [additionalGuests, bookingType, includeRoseDecoration, selectedPackage]);
+
+  const roseDecorationAmount = includeRoseDecoration ? ROSE_DECORATION_PRICE_NAIRA : 0;
 
   useEffect(() => {
     selectedSlotRef.current = selectedSlot;
@@ -413,6 +419,7 @@ export default function PrivateBookingPanel({
           bookingDate: selectedDate,
           timeSlot: selectedSlot,
           additionalGuests,
+          includeRoseDecoration,
           fullName: details.fullName,
           email: details.email,
           phoneNumber: details.phoneNumber,
@@ -771,6 +778,25 @@ export default function PrivateBookingPanel({
               </div>
 
               <div className="space-y-1 sm:col-span-2">
+                <label className="inline-flex items-start gap-3 rounded-lg border border-border/50 bg-background/50 px-3 py-3">
+                  <input
+                    type="checkbox"
+                    checked={includeRoseDecoration}
+                    onChange={(event) => setIncludeRoseDecoration(event.target.checked)}
+                    className="mt-0.5 h-4 w-4 rounded border-border/70"
+                  />
+                  <span>
+                    <span className="block font-outfit text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                      Rose Decoration
+                    </span>
+                    <span className="mt-1 block font-outfit text-sm text-foreground">
+                      Yes, include roses floor and table decoration design (+{formatNaira(ROSE_DECORATION_PRICE_NAIRA)}).
+                    </span>
+                  </span>
+                </label>
+              </div>
+
+              <div className="space-y-1 sm:col-span-2">
                 <label className="font-outfit text-xs uppercase tracking-[0.2em] text-muted-foreground">Notes</label>
                 <textarea
                   value={details.notes}
@@ -815,6 +841,16 @@ export default function PrivateBookingPanel({
               <div className="flex items-start justify-between gap-4">
                 <dt className="font-outfit text-xs uppercase tracking-wider text-muted-foreground">Extra Guests</dt>
                 <dd className="text-right font-outfit text-sm text-foreground">{additionalGuests}</dd>
+              </div>
+            ) : null}
+            <div className="flex items-start justify-between gap-4">
+              <dt className="font-outfit text-xs uppercase tracking-wider text-muted-foreground">Rose Decoration</dt>
+              <dd className="text-right font-outfit text-sm text-foreground">{includeRoseDecoration ? "Yes" : "No"}</dd>
+            </div>
+            {includeRoseDecoration ? (
+              <div className="flex items-start justify-between gap-4">
+                <dt className="font-outfit text-xs uppercase tracking-wider text-muted-foreground">Decoration Fee</dt>
+                <dd className="text-right font-outfit text-sm text-foreground">{formatNaira(roseDecorationAmount)}</dd>
               </div>
             ) : null}
             <div className="flex items-start justify-between gap-4">

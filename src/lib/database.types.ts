@@ -13,6 +13,7 @@ export interface Database {
           package_name: string;
           package_price_ngn: number;
           additional_guests: number;
+          include_rose_decoration: boolean;
           booking_date: string;
           time_slot: string;
           full_name: string;
@@ -39,6 +40,7 @@ export interface Database {
           package_name: string;
           package_price_ngn: number;
           additional_guests?: number;
+          include_rose_decoration?: boolean;
           booking_date: string;
           time_slot: string;
           full_name: string;
@@ -65,6 +67,7 @@ export interface Database {
           package_name?: string;
           package_price_ngn?: number;
           additional_guests?: number;
+          include_rose_decoration?: boolean;
           booking_date?: string;
           time_slot?: string;
           full_name?: string;

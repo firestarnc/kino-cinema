@@ -40,6 +40,7 @@ export async function sendBookingConfirmationEmail(booking: PrivateBookingRow): 
   const amountPaid = `₦${booking.package_price_ngn.toLocaleString()}`;
   const bookingTypeLabel = booking.booking_type;
   const extraGuestValue = booking.booking_type === "movie-package" ? String(booking.additional_guests) : null;
+  const roseDecorationValue = booking.include_rose_decoration ? "Yes (+₦10,000)" : "No";
 
   const html = renderKinoEmailLayout({
     eyebrow: "Booking Confirmed",
@@ -50,6 +51,7 @@ export async function sendBookingConfirmationEmail(booking: PrivateBookingRow): 
       { label: "Booking Type", value: bookingTypeLabel },
       { label: "Package", value: booking.package_name },
       { label: "Amount Paid", value: amountPaid },
+      { label: "Rose Decoration", value: roseDecorationValue },
       { label: "Schedule", value: bookingLabel },
       { label: booking.booking_type === "movie-package" ? "Title" : "Movie", value: movieValue },
       ...(extraGuestValue ? [{ label: "Extra Guests", value: extraGuestValue }] : []),
@@ -69,6 +71,7 @@ export async function sendBookingConfirmationEmail(booking: PrivateBookingRow): 
     `Booking Type: ${bookingTypeLabel}`,
     `Package: ${booking.package_name}`,
     `Amount Paid: ${amountPaid}`,
+    `Rose Decoration: ${roseDecorationValue}`,
     `Schedule: ${bookingLabel}`,
     movieLine,
     ...(extraGuestValue ? [`Extra Guests: ${extraGuestValue}`] : []),
@@ -137,6 +140,7 @@ export async function sendAdminNotification(booking: PrivateBookingRow): Promise
 
   const bookingLabel = `${booking.booking_date} • ${booking.time_slot}`;
   const amountPaid = `₦${booking.package_price_ngn.toLocaleString()}`;
+  const roseDecorationValue = booking.include_rose_decoration ? "Yes (+₦10,000)" : "No";
 
   const subject = `Booking paid: ${booking.paystack_reference}`;
 
@@ -152,6 +156,7 @@ export async function sendAdminNotification(booking: PrivateBookingRow): Promise
       { label: "Reference", value: booking.paystack_reference },
       { label: "Package", value: booking.package_name },
       { label: "Amount", value: amountPaid },
+      { label: "Rose Decoration", value: roseDecorationValue },
       { label: "Schedule", value: bookingLabel },
       { label: "Notes", value: booking.notes ?? "-" },
     ],
@@ -168,6 +173,7 @@ export async function sendAdminNotification(booking: PrivateBookingRow): Promise
     `Reference: ${booking.paystack_reference}`,
     `Package: ${booking.package_name}`,
     `Amount: ${amountPaid}`,
+    `Rose Decoration: ${roseDecorationValue}`,
     `Schedule: ${bookingLabel}`,
     `Notes: ${booking.notes ?? "-"}`,
   ].join("\n");

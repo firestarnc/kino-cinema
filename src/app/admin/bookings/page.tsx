@@ -34,6 +34,7 @@ export default async function AdminBookingsPage() {
               <th className="px-4 py-3 font-outfit text-xs uppercase tracking-wider text-muted-foreground">Type</th>
               <th className="px-4 py-3 font-outfit text-xs uppercase tracking-wider text-muted-foreground">Schedule</th>
               <th className="px-4 py-3 font-outfit text-xs uppercase tracking-wider text-muted-foreground">Package</th>
+              <th className="px-4 py-3 font-outfit text-xs uppercase tracking-wider text-muted-foreground">Decoration</th>
               <th className="px-4 py-3 font-outfit text-xs uppercase tracking-wider text-muted-foreground">Title</th>
               <th className="px-4 py-3 font-outfit text-xs uppercase tracking-wider text-muted-foreground">Status</th>
               <th className="px-4 py-3 font-outfit text-xs uppercase tracking-wider text-muted-foreground">Source</th>
@@ -43,7 +44,7 @@ export default async function AdminBookingsPage() {
           <tbody>
             {bookings.length === 0 ? (
               <tr>
-                <td colSpan={9} className="px-4 py-10 text-center font-outfit text-sm text-muted-foreground">
+                <td colSpan={10} className="px-4 py-10 text-center font-outfit text-sm text-muted-foreground">
                   No bookings found yet.
                 </td>
               </tr>
@@ -73,6 +74,9 @@ export default async function AdminBookingsPage() {
                     {booking.additional_guests > 0 ? (
                       <p className="text-xs text-muted-foreground">Extra guests: {booking.additional_guests}</p>
                     ) : null}
+                  </td>
+                  <td className="px-4 py-3 font-outfit text-xs text-foreground/90">
+                    {booking.include_rose_decoration ? "Yes (+N10,000)" : "No"}
                   </td>
                   <td className="px-4 py-3 font-outfit text-sm text-foreground/90">
                     {booking.booking_type === "movie-package"

@@ -400,7 +400,7 @@ export default function AdminBookingsManager({ initialSlotBlocks }: AdminBooking
                 className="mt-0.5 h-4 w-4 rounded border-border/70"
               />
               <span className="font-outfit text-sm text-foreground">
-                Yes, include roses floor and table decoration design (+{formatNaira(ROSE_DECORATION_PRICE_NAIRA)}).
+                Yes, include roses decoration design (+{formatNaira(ROSE_DECORATION_PRICE_NAIRA)}).
               </span>
             </span>
           </label>

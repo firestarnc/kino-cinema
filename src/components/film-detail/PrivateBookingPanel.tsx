@@ -790,7 +790,7 @@ export default function PrivateBookingPanel({
                       Rose Decoration
                     </span>
                     <span className="mt-1 block font-outfit text-sm text-foreground">
-                      Yes, include roses floor and table decoration design (+{formatNaira(ROSE_DECORATION_PRICE_NAIRA)}).
+                      Yes, include roses decoration design (+{formatNaira(ROSE_DECORATION_PRICE_NAIRA)}).
                     </span>
                   </span>
                 </label>

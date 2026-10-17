@@ -133,7 +133,7 @@ export default function HalloweenPage() {
                 <Sparkles className="h-3.5 w-3.5" /> Halloween Vote
               </span>
               <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-foreground/80">
-                <ShieldCheck className="h-3.5 w-3.5" /> Verified email required
+                <ShieldCheck className="h-3.5 w-3.5" /> Email verification required
               </span>
             </div>
 
@@ -234,7 +234,6 @@ export default function HalloweenPage() {
                           {index + 1}
                         </span>
                       </div>
-                      <p className="mt-3 font-outfit text-sm leading-6 text-foreground/65">{candidate.slug.replaceAll("-", " ")}</p>
                     </button>
                   );
                 })
@@ -288,7 +287,7 @@ export default function HalloweenPage() {
               <div className="rounded-2xl border border-cinema-gold/15 bg-black/20 px-4 py-3">
                 <p className="font-outfit text-xs uppercase tracking-[0.24em] text-cinema-gold">Privacy note</p>
                 <p className="mt-2 font-outfit text-sm leading-7 text-foreground/70">
-                  By voting, you consent to Kino Screens contacting you about your participation and future cinema updates. We only use verified email addresses for this voting flow.
+                  By voting, you consent to Kino Screens contacting you about your participation and future cinema updates. We only accept verified email addresses for this voting process.
                 </p>
               </div>
 
@@ -317,23 +316,17 @@ export default function HalloweenPage() {
           <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur-xl md:p-8 animate-fade-up">
             <div className="flex items-center gap-3 text-cinema-gold">
               <Sparkles className="h-5 w-5" />
-              <p className="font-outfit text-xs uppercase tracking-[0.28em]">Elegant halloween effect</p>
+              <p className="font-outfit text-xs uppercase tracking-[0.28em]">Kino Screens appreciates you</p>
             </div>
-            <p className="mt-4 font-playfair text-2xl text-foreground">Subtle glow, premium contrast, and cinema mood.</p>
-            <p className="mt-3 font-outfit text-sm leading-7 text-foreground/70">
-              The page uses lightweight gradients, soft floating light, and restrained motion so the event feels festive without becoming visually noisy.
+            <p className="mt-3 sm:text-base font-outfit text-sm leading-7 text-foreground/70">
+              Thank you for being part of the Halloween experience.
             </p>
-            <div className="mt-5 flex flex-wrap gap-3 text-xs uppercase tracking-[0.24em] text-muted-foreground">
-              <span className="rounded-full border border-white/10 bg-black/20 px-3 py-2">CSS-only accents</span>
-              <span className="rounded-full border border-white/10 bg-black/20 px-3 py-2">Minimal motion</span>
-              <span className="rounded-full border border-white/10 bg-black/20 px-3 py-2">Classy noir theme</span>
-            </div>
             <div className="mt-6 flex gap-3">
               <Link href="/" className="rounded-full border border-white/10 bg-black/20 px-4 py-2 font-outfit text-xs uppercase tracking-[0.24em] text-foreground/75 transition hover:border-cinema-gold/30 hover:text-cinema-gold">
                 Back home
               </Link>
-              <Link href="/admin/halloween" className="rounded-full border border-cinema-gold/25 bg-cinema-gold/10 px-4 py-2 font-outfit text-xs uppercase tracking-[0.24em] text-cinema-gold transition hover:bg-cinema-gold/15">
-                Admin results
+              <Link href="" className="rounded-full border border-cinema-gold/25 bg-cinema-gold/10 px-4 py-2 font-outfit text-xs uppercase tracking-[0.24em] text-cinema-gold transition hover:bg-cinema-gold/15">
+                View Results
               </Link>
             </div>
           </div>

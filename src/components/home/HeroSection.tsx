@@ -63,7 +63,7 @@ export default function HeroSection() {
             size="lg"
             className="velvet-glow px-8 py-6 text-base font-outfit"
           >
-            <Link href="/now-showing/">Explore Shows</Link>
+            <Link href="/now-showing/">Now Showing</Link>
           </Button>
           <Button
             asChild

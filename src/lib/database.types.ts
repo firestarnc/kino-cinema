@@ -1,6 +1,117 @@
 export interface Database {
   public: {
     Tables: {
+      halloween_candidates: {
+        Row: {
+          id: string;
+          display_name: string;
+          slug: string;
+          sort_order: number;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          display_name: string;
+          slug: string;
+          sort_order?: number;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          display_name?: string;
+          slug?: string;
+          sort_order?: number;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      halloween_vote_attempts: {
+        Row: {
+          id: string;
+          email_normalized: string | null;
+          ip_address: string | null;
+          outcome: string;
+          reason: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          email_normalized?: string | null;
+          ip_address?: string | null;
+          outcome: string;
+          reason?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          email_normalized?: string | null;
+          ip_address?: string | null;
+          outcome?: string;
+          reason?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      halloween_votes: {
+        Row: {
+          id: string;
+          candidate_id: string;
+          full_name: string;
+          email: string;
+          email_normalized: string;
+          phone_number: string;
+          verification_token_hash: string | null;
+          token_expires_at: string | null;
+          verified_at: string | null;
+          verified_ip_address: string | null;
+          verified_user_agent: string | null;
+          ip_address: string | null;
+          user_agent: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          candidate_id: string;
+          full_name: string;
+          email: string;
+          email_normalized: string;
+          phone_number: string;
+          verification_token_hash?: string | null;
+          token_expires_at?: string | null;
+          verified_at?: string | null;
+          verified_ip_address?: string | null;
+          verified_user_agent?: string | null;
+          ip_address?: string | null;
+          user_agent?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          candidate_id?: string;
+          full_name?: string;
+          email?: string;
+          email_normalized?: string;
+          phone_number?: string;
+          verification_token_hash?: string | null;
+          token_expires_at?: string | null;
+          verified_at?: string | null;
+          verified_ip_address?: string | null;
+          verified_user_agent?: string | null;
+          ip_address?: string | null;
+          user_agent?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       private_bookings: {
         Row: {
           id: string;

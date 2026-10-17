@@ -11,6 +11,8 @@ interface KinoEmailLayoutOptions {
   details?: EmailDetailItem[];
   highlightTitle?: string;
   highlightBody?: string;
+  ctaLabel?: string;
+  ctaHref?: string;
   footerPrimary?: string;
   footerSecondary?: string;
 }
@@ -83,6 +85,22 @@ function renderHighlight(title: string | undefined, body: string | undefined): s
   `;
 }
 
+function renderCta(ctaLabel: string | undefined, ctaHref: string | undefined): string {
+  if (!ctaLabel || !ctaHref) {
+    return "";
+  }
+
+  return `
+    <tr>
+      <td style="padding:10px 26px 2px;text-align:center;">
+        <a href="${escapeHtml(ctaHref)}" style="display:inline-block;background:#f3d58a;color:#1a0811;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding:14px 22px;border-radius:999px;">
+          ${escapeHtml(ctaLabel)}
+        </a>
+      </td>
+    </tr>
+  `;
+}
+
 export function renderKinoEmailLayout(options: KinoEmailLayoutOptions): string {
   const {
     eyebrow,
@@ -92,6 +110,8 @@ export function renderKinoEmailLayout(options: KinoEmailLayoutOptions): string {
     details,
     highlightTitle,
     highlightBody,
+    ctaLabel,
+    ctaHref,
     footerPrimary,
     footerSecondary,
   } = options;
@@ -117,6 +137,7 @@ export function renderKinoEmailLayout(options: KinoEmailLayoutOptions): string {
 
         ${renderDetails(details, detailsTitle)}
         ${renderHighlight(highlightTitle, highlightBody)}
+        ${renderCta(ctaLabel, ctaHref)}
 
         <tr>
           <td style=\"padding:18px 26px 26px;\">

@@ -19,6 +19,7 @@ import { cn } from "@/lib/utils";
 const navLinks = [
   { href: "/", label: "Homepage" },
   { href: "/now-showing/", label: "Now Showing" },
+  { href: "/halloween/", label: "Halloween Vote" },
   { href: "/experience/", label: "Experience" },
   { href: "/membership/", label: "Membership" },
 ] as const;
@@ -28,10 +29,14 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState<boolean>(false);
   const pathname = usePathname(); // Get current route
 
+  const normalizePath = (path: string) => path.replace(/\/+$/, "") || "/";
+  const normalizedPathname = normalizePath(pathname || "/");
+
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
     };
+
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -66,7 +71,7 @@ export default function Header() {
           {/* Desktop Navigation */}
           <nav className="hidden items-center gap-8 md:flex">
             {navLinks.map((link) => {
-              const isActive = pathname === link.href;
+              const isActive = normalizedPathname === normalizePath(link.href);
               return (
                 <Link
                   key={link.href}
@@ -138,7 +143,7 @@ export default function Header() {
 
                 <nav className="flex flex-col gap-6">
                   {navLinks.map((link) => {
-                    const isActive = pathname === link.href;
+                    const isActive = normalizedPathname === normalizePath(link.href);
                     return (
                       <Link
                         key={link.href}

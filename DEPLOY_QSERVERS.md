@@ -101,6 +101,23 @@ Project-specific secrets (payment, db, email, admin):
 - `ADMIN_BASIC_USERNAME`
 - `ADMIN_BASIC_PASSWORD`
 
+Halloween voting settings:
+
+- `HALLOWEEN_DISPOSABLE_EMAIL_DOMAINS`
+  - Optional comma-separated deny list for extra disposable email domains.
+- `NEXT_PUBLIC_SITE_URL`
+  - Used to generate the Halloween verification email link.
+- `BOOKING_FROM_EMAIL`
+  - Reused as the sender address for Halloween verification emails.
+
+Halloween deploy order:
+
+1. Run the `supabase/migrations/20261017_halloween_voting.sql` migration.
+2. Confirm the new Halloween tables exist and RLS is enabled.
+3. Make sure the Halloween env vars above are present.
+4. Deploy the app and restart PM2.
+5. Test `GET /halloween/` and the verification email link.
+
 ## Apache optimization snippet
 
 Use this after deployment to improve speed.

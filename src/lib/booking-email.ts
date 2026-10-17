@@ -4,6 +4,11 @@ import nodemailer from "nodemailer";
 
 export type PrivateBookingRow = Database["public"]["Tables"]["private_bookings"]["Row"];
 
+type SerializableErrorMeta = {
+  response?: unknown;
+  code?: unknown;
+};
+
 function getSmtpPort(): number {
   const rawPort = process.env.QSERVERS_SMTP_PORT ?? "587";
   const port = Number(rawPort);
@@ -99,19 +104,20 @@ export async function sendBookingConfirmationEmail(booking: PrivateBookingRow): 
       text,
       html,
     });
+
     console.info("[email] Sent booking confirmation", {
       reference: booking.paystack_reference,
       recipient: booking.email,
-      messageId: (info as any)?.messageId,
-      response: (info as any)?.response,
+      messageId: info.messageId,
     });
   } catch (error) {
+    const errorMeta = error as SerializableErrorMeta;
     console.error("[email] Failed to send booking confirmation", {
       reference: booking.paystack_reference,
       recipient: booking.email,
       error,
-      smtpResponse: (error as any)?.response,
-      code: (error as any)?.code,
+      smtpResponse: errorMeta.response,
+      code: errorMeta.code,
     });
     throw error;
   }
@@ -197,19 +203,20 @@ export async function sendAdminNotification(booking: PrivateBookingRow): Promise
       text,
       html,
     });
+
     console.info("[email] Sent admin notification", {
       reference: booking.paystack_reference,
       recipients,
-      messageId: (info as any)?.messageId,
-      response: (info as any)?.response,
+      messageId: info.messageId,
     });
   } catch (error) {
+    const errorMeta = error as SerializableErrorMeta;
     console.error("[email] Failed to send admin notification", {
       reference: booking.paystack_reference,
       recipients,
       error,
-      smtpResponse: (error as any)?.response,
-      code: (error as any)?.code,
+      smtpResponse: errorMeta.response,
+      code: errorMeta.code,
     });
     throw error;
   }

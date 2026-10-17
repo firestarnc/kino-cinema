@@ -1,27 +1,9 @@
 import type { Metadata } from "next";
-import { Outfit, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Providers from "@/providers";
 import { businessDetails, siteUrl } from "@/lib/site";
-
-const outfit = Outfit({
-  variable: "--font-outfit",
-  subsets: ["latin"],
-  display: "swap",
-  preload: true,
-  weight: ["400", "500", "600", "700"],
-});
-
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
-  subsets: ["latin"],
-  display: "swap",
-  preload: true,
-  weight: ["400", "500", "600", "700", "800"],
-  style: ["normal", "italic"],
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -99,7 +81,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${outfit.variable} ${playfair.variable} antialiased min-h-screen flex flex-col font-sans`}
+        className="antialiased min-h-screen flex flex-col font-sans"
+        style={{
+          ["--font-outfit" as never]: '"Outfit", sans-serif',
+          ["--font-playfair" as never]: '"Playfair Display", serif',
+        }}
       >
         <script
           type="application/ld+json"

@@ -8,6 +8,11 @@ import {
   markBookingPaid,
 } from "@/lib/private-booking-db";
 
+type SerializableErrorMeta = {
+  response?: unknown;
+  code?: unknown;
+};
+
 interface PaystackWebhookEvent {
   event?: string;
   data?: {
@@ -81,11 +86,12 @@ export async function POST(request: NextRequest) {
 
   if (bookingForEmail) {
     sendBookingConfirmationEmail(bookingForEmail).catch((error) => {
+      const errorMeta = error as SerializableErrorMeta;
       console.error("[booking] Failed to send booking confirmation from webhook route", {
         reference,
         error,
-        smtpResponse: (error as any)?.response,
-        code: (error as any)?.code,
+        smtpResponse: errorMeta.response,
+        code: errorMeta.code,
       });
     });
   }

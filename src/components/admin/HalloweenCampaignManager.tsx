@@ -4,7 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 
-type CampaignMode = "dry-run" | "live";
+type CampaignMode = "dry-run" | "live" | "test";
 
 type CampaignResponse = {
   success?: boolean;
@@ -22,14 +22,17 @@ type CampaignResponse = {
   failures?: Array<{ email: string; reason: string; code?: string }>;
   throttleMs?: number;
   maxRecipients?: number;
+  testRecipient?: string;
 };
 
 export default function HalloweenCampaignManager() {
   const [isDryRunning, setIsDryRunning] = useState(false);
   const [isSending, setIsSending] = useState(false);
+  const [isTesting, setIsTesting] = useState(false);
+  const [testRecipient, setTestRecipient] = useState("firestar.nc@gmail.com");
   const [result, setResult] = useState<CampaignResponse | null>(null);
 
-  async function triggerCampaign(mode: CampaignMode) {
+  async function triggerCampaign(mode: CampaignMode, options?: { testRecipient?: string }) {
     if (mode === "live") {
       const confirmed = window.confirm("Send Halloween campaign email to paid previous clients now?");
       if (!confirmed) {
@@ -37,7 +40,9 @@ export default function HalloweenCampaignManager() {
       }
     }
 
-    if (mode === "dry-run") {
+    if (options?.testRecipient) {
+      setIsTesting(true);
+    } else if (mode === "dry-run") {
       setIsDryRunning(true);
     } else {
       setIsSending(true);
@@ -51,6 +56,7 @@ export default function HalloweenCampaignManager() {
           mode,
           throttleMs: 1200,
           maxRecipients: 5000,
+          testRecipient: options?.testRecipient,
         }),
       });
 
@@ -61,12 +67,20 @@ export default function HalloweenCampaignManager() {
       }
 
       setResult(payload);
-      toast.success(mode === "dry-run" ? "Dry run generated successfully" : "Live campaign completed");
+      if (options?.testRecipient) {
+        toast.success("Test campaign email sent successfully");
+      } else if (mode === "dry-run") {
+        toast.success("Dry run generated successfully");
+      } else {
+        toast.success("Live campaign completed");
+      }
     } catch (error) {
       const message = error instanceof Error ? error.message : "Campaign request failed";
       toast.error(message);
     } finally {
-      if (mode === "dry-run") {
+      if (options?.testRecipient) {
+        setIsTesting(false);
+      } else if (mode === "dry-run") {
         setIsDryRunning(false);
       } else {
         setIsSending(false);
@@ -82,10 +96,29 @@ export default function HalloweenCampaignManager() {
       </p>
 
       <div className="mt-4 flex flex-wrap gap-3">
+        <input
+          type="email"
+          value={testRecipient}
+          onChange={(event) => setTestRecipient(event.target.value)}
+          className="min-w-[260px] rounded-lg border border-border/50 bg-background/70 px-3 py-2 font-outfit text-sm text-foreground outline-none transition focus:border-primary"
+          placeholder="Your test email"
+          disabled={isDryRunning || isSending || isTesting}
+        />
+
+        <Button
+          type="button"
+          onClick={() => void triggerCampaign("dry-run", { testRecipient: testRecipient.trim() })}
+          disabled={isDryRunning || isSending || isTesting || !testRecipient.trim()}
+          className="font-outfit text-xs uppercase tracking-[0.2em]"
+          variant="secondary"
+        >
+          {isTesting ? "Sending Test..." : "Send Test To My Email"}
+        </Button>
+
         <Button
           type="button"
           onClick={() => void triggerCampaign("dry-run")}
-          disabled={isDryRunning || isSending}
+          disabled={isDryRunning || isSending || isTesting}
           className="font-outfit text-xs uppercase tracking-[0.2em]"
           variant="secondary"
         >
@@ -95,7 +128,7 @@ export default function HalloweenCampaignManager() {
         <Button
           type="button"
           onClick={() => void triggerCampaign("live")}
-          disabled={isDryRunning || isSending}
+          disabled={isDryRunning || isSending || isTesting}
           className="font-outfit text-xs uppercase tracking-[0.2em]"
         >
           {isSending ? "Sending Campaign..." : "Send Live Campaign"}
@@ -118,6 +151,12 @@ export default function HalloweenCampaignManager() {
           {result.subject ? (
             <p className="mt-3 font-outfit text-sm text-muted-foreground">
               Subject: {result.subject}
+            </p>
+          ) : null}
+
+          {result.testRecipient ? (
+            <p className="mt-1 font-outfit text-sm text-muted-foreground">
+              Test Recipient: {result.testRecipient}
             </p>
           ) : null}
 

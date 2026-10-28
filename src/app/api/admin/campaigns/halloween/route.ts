@@ -11,12 +11,14 @@ export const dynamic = "force-dynamic";
 
 const CAMPAIGN_SLUG = "halloween-2026-girls-night";
 
-type CampaignMode = "dry-run" | "live";
+type CampaignMode = "dry-run" | "live" | "test";
 
 interface CampaignPayload {
   mode?: CampaignMode;
   throttleMs?: number;
   maxRecipients?: number;
+  testRecipient?: string;
+  testRecipientName?: string;
 }
 
 interface CampaignFailure {
@@ -50,11 +52,34 @@ function getBaseSiteUrl(request: NextRequest): string {
   return request.nextUrl.origin;
 }
 
+function getCampaignCtaUrl(request: NextRequest): string {
+  const explicitWhatsappUrl = process.env.HALLOWEEN_CAMPAIGN_WHATSAPP_URL?.trim();
+  if (explicitWhatsappUrl) {
+    return explicitWhatsappUrl;
+  }
+
+  const rawPhone = (process.env.NEXT_PUBLIC_BUSINESS_PHONE ?? "+2347041291776").trim();
+  const phoneDigits = rawPhone.replace(/\D/g, "");
+  const message = encodeURIComponent(
+    "Hi Kino, I want to book the girls-only Halloween movie experience."
+  );
+
+  if (!phoneDigits) {
+    return `${getBaseSiteUrl(request)}/book`;
+  }
+
+  return `https://wa.me/${phoneDigits}?text=${message}`;
+}
+
 function toSafeErrorMessage(error: unknown): string {
   if (error instanceof Error && error.message) {
     return error.message.slice(0, 240);
   }
   return "Unknown send error";
+}
+
+function isValidEmail(email: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 }
 
 async function sleep(ms: number): Promise<void> {
@@ -68,11 +93,46 @@ export async function POST(request: NextRequest) {
   }
 
   const payload = (await request.json().catch(() => ({}))) as CampaignPayload;
+  const testRecipient = payload.testRecipient?.trim();
+
+  if (testRecipient) {
+    if (!isValidEmail(testRecipient)) {
+      return NextResponse.json({ error: "Invalid testRecipient email" }, { status: 400 });
+    }
+
+    const bookingUrl = getCampaignCtaUrl(request);
+    const testRecipientName = payload.testRecipientName?.trim();
+    const recipientName = testRecipientName && testRecipientName.length >= 2 ? testRecipientName : "Kino Guest";
+
+    try {
+      await sendHalloweenCampaignEmail({
+        recipientEmail: testRecipient,
+        recipientName,
+        bookingUrl,
+      });
+
+      return NextResponse.json({
+        success: true,
+        mode: "test",
+        campaignSlug: CAMPAIGN_SLUG,
+        subject: getHalloweenCampaignSubject(),
+        bookingUrl,
+        attempted: 1,
+        sent: 1,
+        skipped: 0,
+        failed: 0,
+        testRecipient,
+      });
+    } catch (error) {
+      return NextResponse.json({ error: toSafeErrorMessage(error) }, { status: 500 });
+    }
+  }
+
   const mode: CampaignMode = payload.mode === "live" ? "live" : "dry-run";
   const throttleMs = Math.max(250, Math.min(3000, payload.throttleMs ?? 1200));
   const maxRecipients = Math.max(1, Math.min(10000, payload.maxRecipients ?? 5000));
 
-  const bookingUrl = `${getBaseSiteUrl(request)}/book`;
+  const bookingUrl = getCampaignCtaUrl(request);
   const recipients = await listPaidCampaignAudience(maxRecipients);
 
   if (mode === "dry-run") {

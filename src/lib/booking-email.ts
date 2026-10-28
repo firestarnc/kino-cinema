@@ -251,7 +251,7 @@ export async function sendHalloweenCampaignEmail(input: {
     details: [
       { label: "Grand Prize", value: "N200,000 CASH for best dressed" },
       { label: "Date", value: "October 31" },
-      { label: "Price", value: "N30,000 per person" },
+      { label: "Experience Pass", value: "N30,000 per person" },
       { label: "Includes", value: "Popcorn, small wine, water, banana bread, and a Kino branded gift" },
       { label: "Sessions", value: "9am-12pm, 12pm-3pm, 3pm-6pm, 6pm-9pm" },
     ],

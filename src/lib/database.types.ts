@@ -1,6 +1,48 @@
 export interface Database {
   public: {
     Tables: {
+      campaign_email_sends: {
+        Row: {
+          id: string;
+          campaign_slug: string;
+          recipient_email: string;
+          recipient_email_normalized: string;
+          recipient_name: string | null;
+          booking_reference: string | null;
+          status: "sent" | "failed" | "skipped";
+          error_code: string | null;
+          error_message: string | null;
+          metadata: Record<string, unknown>;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          campaign_slug: string;
+          recipient_email: string;
+          recipient_email_normalized: string;
+          recipient_name?: string | null;
+          booking_reference?: string | null;
+          status: "sent" | "failed" | "skipped";
+          error_code?: string | null;
+          error_message?: string | null;
+          metadata?: Record<string, unknown>;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          campaign_slug?: string;
+          recipient_email?: string;
+          recipient_email_normalized?: string;
+          recipient_name?: string | null;
+          booking_reference?: string | null;
+          status?: "sent" | "failed" | "skipped";
+          error_code?: string | null;
+          error_message?: string | null;
+          metadata?: Record<string, unknown>;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       halloween_candidates: {
         Row: {
           id: string;

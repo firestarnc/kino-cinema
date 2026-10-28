@@ -25,6 +25,24 @@ export type UpsertManualSlotBlockResult = {
   block: ManualSlotBlockRow | null;
 };
 
+export type CampaignAudienceRecipient = {
+  fullName: string;
+  email: string;
+  emailNormalized: string;
+  paystackReference: string;
+  lastBookingAt: string;
+};
+
+type CampaignSendStatus = Database["public"]["Tables"]["campaign_email_sends"]["Insert"]["status"];
+
+function normalizeEmail(value: string): string {
+  return value.trim().toLowerCase();
+}
+
+function isValidEmail(value: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
 function isMissingConfirmationColumnError(error: PostgrestError | null): boolean {
   if (!error) return false;
   if (error.code === "42703") return true;
@@ -144,6 +162,90 @@ export async function getRecentBookings(limit: number = 100): Promise<PrivateBoo
   }
 
   return data;
+}
+
+export async function listPaidCampaignAudience(limit: number = 5000): Promise<CampaignAudienceRecipient[]> {
+  const supabase = getSupabaseAdminClient();
+
+  const { data, error } = await supabase
+    .from("private_bookings")
+    .select("full_name,email,paystack_reference,created_at")
+    .eq("status", "paid")
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (error || !data) {
+    return [];
+  }
+
+  const dedupedRecipients = new Map<string, CampaignAudienceRecipient>();
+
+  for (const booking of data) {
+    const emailNormalized = normalizeEmail(booking.email ?? "");
+    if (!emailNormalized || !isValidEmail(emailNormalized) || dedupedRecipients.has(emailNormalized)) {
+      continue;
+    }
+
+    dedupedRecipients.set(emailNormalized, {
+      fullName: (booking.full_name ?? "Guest").trim() || "Guest",
+      email: booking.email,
+      emailNormalized,
+      paystackReference: booking.paystack_reference,
+      lastBookingAt: booking.created_at,
+    });
+  }
+
+  return Array.from(dedupedRecipients.values());
+}
+
+export async function wasCampaignEmailSent(campaignSlug: string, emailNormalized: string): Promise<boolean> {
+  const supabase = getSupabaseAdminClient();
+
+  const { data, error } = await supabase
+    .from("campaign_email_sends")
+    .select("id")
+    .eq("campaign_slug", campaignSlug)
+    .eq("recipient_email_normalized", emailNormalized)
+    .eq("status", "sent")
+    .maybeSingle();
+
+  if (error && error.code !== "PGRST116") {
+    return false;
+  }
+
+  return Boolean(data);
+}
+
+export async function recordCampaignEmailSend(input: {
+  campaignSlug: string;
+  recipientEmail: string;
+  recipientEmailNormalized: string;
+  recipientName: string | null;
+  bookingReference: string | null;
+  status: CampaignSendStatus;
+  errorCode?: string | null;
+  errorMessage?: string | null;
+  metadata?: Record<string, unknown>;
+}): Promise<void> {
+  const supabase = getSupabaseAdminClient();
+
+  const { error } = await supabase
+    .from("campaign_email_sends")
+    .insert({
+      campaign_slug: input.campaignSlug,
+      recipient_email: input.recipientEmail,
+      recipient_email_normalized: input.recipientEmailNormalized,
+      recipient_name: input.recipientName,
+      booking_reference: input.bookingReference,
+      status: input.status,
+      error_code: input.errorCode ?? null,
+      error_message: input.errorMessage ?? null,
+      metadata: input.metadata ?? {},
+    });
+
+  if (error && error.code !== "23505") {
+    throw error;
+  }
 }
 
 export async function getPaidSlotsForDate(dateISO: string): Promise<string[]> {

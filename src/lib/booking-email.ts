@@ -221,3 +221,98 @@ export async function sendAdminNotification(booking: PrivateBookingRow): Promise
     throw error;
   }
 }
+
+export function getHalloweenCampaignSubject(): string {
+  return "Girls-Only Halloween Movie Experience at Kino 🎃";
+}
+
+export async function sendHalloweenCampaignEmail(input: {
+  recipientEmail: string;
+  recipientName: string;
+  bookingUrl: string;
+}): Promise<void> {
+  const smtpHost = process.env.QSERVERS_SMTP_HOST;
+  const smtpUser = process.env.QSERVERS_SMTP_USER;
+  const smtpPassword = process.env.QSERVERS_SMTP_PASSWORD;
+  const fromEmail = process.env.BOOKING_FROM_EMAIL;
+
+  if (!smtpHost || !smtpUser || !smtpPassword || !fromEmail) {
+    throw new Error("Campaign email service is not configured");
+  }
+
+  const subject = getHalloweenCampaignSubject();
+
+  const html = renderKinoEmailLayout({
+    eyebrow: "Halloween Event",
+    title: "Girls-Only Halloween Movie Experience",
+    intro: `Hi ${input.recipientName}, this October 31st we are hosting a girls-only Halloween movie experience at Kino.`
+      + " Arrive in your Halloween outfit, get professionally filmed, and enjoy a movie session with refreshments.",
+    detailsTitle: "Event Highlights",
+    details: [
+      { label: "Date", value: "October 31" },
+      { label: "Price", value: "N30,000 per person" },
+      { label: "Includes", value: "Popcorn, small wine, water, banana bread, and a Kino branded gift" },
+      { label: "Sessions", value: "9am-12pm, 12pm-3pm, 3pm-6pm, 6pm-9pm" },
+      { label: "Grand Prize", value: "N200,000 for best dressed" },
+    ],
+    highlightTitle: "How Winner Is Selected",
+    highlightBody:
+      "Outfit videos will be posted on our socials and free voting will open on our website."
+      + " Social likes and website votes help determine finalists. Judges make the final decision and the winner is announced live on TikTok on November 1st.",
+    ctaLabel: "Reserve Your Session",
+    ctaHref: input.bookingUrl,
+    footerPrimary:
+      "You can book individually or choose the same session as a friend, subject to availability."
+      + " Need help? Reply to this email or contact contact@kinoscreens.com.",
+    footerSecondary:
+      "If you prefer not to receive campaign updates, reply with UNSUBSCRIBE and we will remove you from future broadcasts.",
+  });
+
+  const text = [
+    `Hi ${input.recipientName},`,
+    "",
+    "It is a girls-only Halloween movie experience at Kino on October 31st.",
+    "",
+    "Come in your Halloween outfit, show off your look, and get professionally filmed by our videographer.",
+    "Afterwards, settle in for a movie with refreshments.",
+    "",
+    "Price: N30,000 per person",
+    "Includes: popcorn, small wine, water, banana bread, and a Kino branded gift.",
+    "",
+    "Sessions:",
+    "- 9am-12pm",
+    "- 12pm-3pm",
+    "- 3pm-6pm",
+    "- 6pm-9pm",
+    "",
+    "Outfit videos will be posted on our socials. Free voting opens on our website.",
+    "Social likes and website votes help decide finalists.",
+    "Winner announcement: Live on TikTok, November 1st.",
+    "Grand prize: N200,000.",
+    "",
+    `Reserve your session: ${input.bookingUrl}`,
+    "",
+    "You can book individually or choose the same session as a friend, subject to availability.",
+    "",
+    "To opt out of future campaign updates, reply with UNSUBSCRIBE.",
+  ].join("\n");
+
+  const smtpPort = getSmtpPort();
+  const transporter = nodemailer.createTransport({
+    host: smtpHost,
+    port: smtpPort,
+    secure: smtpPort === 465,
+    auth: {
+      user: smtpUser,
+      pass: smtpPassword,
+    },
+  });
+
+  await transporter.sendMail({
+    from: fromEmail,
+    to: input.recipientEmail,
+    subject,
+    text,
+    html,
+  });
+}

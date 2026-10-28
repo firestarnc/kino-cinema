@@ -2,6 +2,7 @@ import { formatNaira } from "@/lib/private-booking";
 import { getActiveSlotBlocks, getRecentBookings } from "@/lib/private-booking-db";
 import AdminLogoutButton from "@/components/admin/AdminLogoutButton";
 import AdminBookingsManager from "@/components/admin/AdminBookingsManager";
+import HalloweenCampaignManager from "@/components/admin/HalloweenCampaignManager";
 
 export const dynamic = "force-dynamic";
 
@@ -24,6 +25,7 @@ export default async function AdminBookingsPage() {
       </div>
 
       <AdminBookingsManager initialSlotBlocks={slotBlocks} />
+      <HalloweenCampaignManager />
 
       <div className="overflow-x-auto rounded-xl border border-border/40 bg-card/40 backdrop-blur-sm">
         <table className="min-w-full">

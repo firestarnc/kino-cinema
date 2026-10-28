@@ -223,7 +223,7 @@ export async function sendAdminNotification(booking: PrivateBookingRow): Promise
 }
 
 export function getHalloweenCampaignSubject(): string {
-  return "Girls-Only Halloween Movie Experience at Kino 🎃";
+  return "WIN N200,000 CASH | Girls-Only Halloween Movie Experience at Kino";
 }
 
 export async function sendHalloweenCampaignEmail(input: {
@@ -244,22 +244,22 @@ export async function sendHalloweenCampaignEmail(input: {
 
   const html = renderKinoEmailLayout({
     eyebrow: "Halloween Event",
-    title: "Girls-Only Halloween Movie Experience",
+    title: "Compete to WIN N200,000 Cash at Kino",
     intro: `Hi ${input.recipientName}, this October 31st we are hosting a girls-only Halloween movie experience at Kino.`
-      + " Arrive in your Halloween outfit, get professionally filmed, and enjoy a movie session with refreshments.",
+      + " Come in your best Halloween outfit, get professionally filmed, and compete for a N200,000 cash prize for best dressed.",
     detailsTitle: "Event Highlights",
     details: [
+      { label: "Grand Prize", value: "N200,000 CASH for best dressed" },
       { label: "Date", value: "October 31" },
       { label: "Price", value: "N30,000 per person" },
       { label: "Includes", value: "Popcorn, small wine, water, banana bread, and a Kino branded gift" },
       { label: "Sessions", value: "9am-12pm, 12pm-3pm, 3pm-6pm, 6pm-9pm" },
-      { label: "Grand Prize", value: "N200,000 for best dressed" },
     ],
-    highlightTitle: "How Winner Is Selected",
+    highlightTitle: "N200,000 GRAND PRIZE",
     highlightBody:
-      "Outfit videos will be posted on our socials and free voting will open on our website."
+      "The best-dressed winner takes home N200,000 cash. Outfit videos will be posted on our socials and free voting will open on our website."
       + " Social likes and website votes help determine finalists. Judges make the final decision and the winner is announced live on TikTok on November 1st.",
-    ctaLabel: "Reserve Your Session",
+    ctaLabel: "Reserve Your Slot to Compete",
     ctaHref: input.bookingUrl,
     footerPrimary:
       "You can book individually or choose the same session as a friend, subject to availability."
@@ -270,6 +270,8 @@ export async function sendHalloweenCampaignEmail(input: {
 
   const text = [
     `Hi ${input.recipientName},`,
+    "",
+    "GRAND PRIZE: N200,000 CASH for best dressed.",
     "",
     "It is a girls-only Halloween movie experience at Kino on October 31st.",
     "",
@@ -293,6 +295,8 @@ export async function sendHalloweenCampaignEmail(input: {
     `Reserve your session: ${input.bookingUrl}`,
     "",
     "You can book individually or choose the same session as a friend, subject to availability.",
+    "",
+    "Do not miss your chance to compete for N200,000 cash - limited session slots available.",
     "",
     "To opt out of future campaign updates, reply with UNSUBSCRIBE.",
   ].join("\n");
